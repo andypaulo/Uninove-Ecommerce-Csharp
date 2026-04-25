@@ -51,6 +51,9 @@
         <a href="./carrinho.html" class="btn btn-primary">
             Ir para Carrinho HTML
         </a>
+        <a asp-controller="Produto" asp-action="Gerenciamento" class="btn btn-dark">
+            Acessar Painel de Gerenciamento
+        </a>
 </section>
 <section class="mangas">
     <div class="text-center">
@@ -67,6 +70,12 @@
                                 <p class="card-text text-muted">@item.Descricao</p>
                                 <h4 class="text-primary">R$ @item.Preco.ToString("N2")</h4>
                                 <a href="#" class="btn btn-success w-100">Comprar</a>
+                                <a asp-controller="Produto"
+                                   asp-action="Delete"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-danger">
+                                    Deletar Produto
+                                </a>
                             </div>
                         </div>
                     </div>
