@@ -1,0 +1,47 @@
+﻿@model IEnumerable<EcommerceMVC.Models.Produto>
+
+@{
+    ViewData["Title"] = "Painel de Gerenciamento";
+}
+
+<h2>Painel de Gerenciamento</h2>
+
+@if (TempData["Sucesso"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Sucesso"]
+    </div>
+}
+
+@if (TempData["ErroExclusao"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErroExclusao"]
+    </div>
+}
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="~/images/@item.Imagem" class="card-img-top" alt="@item.Nome"
+                     onerror="this.src='/images/sem-foto.jpg'">
+                <div class="card-body">
+                    <h5 class="card-title">@item.Nome</h5>
+                    <p class="card-text">Estoque: <strong>@item.Estoque</strong></p>
+                    <p class="card-text">Preço: @item.Preco.ToString("C")</p>
+
+                    <div class="d-grid gap-2">
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Deletar Produto</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Editar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="mt-4">
+    <a asp-action="Create" class="btn btn-success">Cadastrar Novo Produto</a>
+</div>
