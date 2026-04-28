@@ -5,7 +5,6 @@
 }
 
 <style>
-    /* SEÇÃO DE MANGÁS */
     .mangas {
         padding: 20px;
     }
@@ -15,19 +14,18 @@
         padding: 10px;
     }
 
-        .card img {
-            width: 100%;
-            aspect-ratio: 2 / 3;
-            object-fit: cover;
-            border-radius: 5px;
-        }
+    .card img {
+        width: 100%;
+        aspect-ratio: 2 / 3;
+        object-fit: cover;
+        border-radius: 5px;
+    }
 
-            .card img:hover {
-                transform: scale(1.05);
-                transition: 0.3s;
-            }
+    .card img:hover {
+        transform: scale(1.05);
+        transition: 0.3s;
+    }
 
-    /* PERSONAGENS */
     .personagens {
         background-color: #222;
         padding: 20px;
@@ -35,68 +33,88 @@
         justify-content: space-around;
     }
 
-        .personagens img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
+    .personagens img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
 
-    /* DESTAQUES */
     .destaques {
         padding: 20px;
     }
+
     .detail {
         text-decoration: none;
+        color: inherit;
     }
 </style>
-<section>
-        <a href="./carrinho.html" class="btn btn-primary">
-            Ir para Carrinho HTML
-        </a>
-        <a asp-controller="Produto" asp-action="Gerenciamento" class="btn btn-dark">
-            Acessar Painel de Gerenciamento
-        </a>
+
+<!-- BOTÕES SUPERIORES -->
+<section class="mb-3">
+    <a href="/carrinho.html" class="btn btn-primary">
+        Ir para Carrinho HTML
+    </a>
+
+    <a asp-controller="Produto" asp-action="Gerenciamento" class="btn btn-dark">
+        Painel de Gerenciamento
+    </a>
 </section>
+
+<!-- PRODUTOS -->
 <section class="mangas">
     <div class="text-center">
         <div class="container mt-4">
             <h2 class="mb-4">Produtos em Destaque</h2>
             <div class="row">
+
                 @foreach (var item in Model)
                 {
                     <div class="col-md-4 mb-3">
                         <div class="card shadow-sm">
-                            <img src="/img/@item.Imagem" class="card-img-top" alt="@item.Nome">
+
+                            <!-- IMAGEM CORRIGIDA -->
+                            <img src="/images/@item.Imagem" 
+                                 class="card-img-top" 
+                                 alt="@item.Nome">
+
                             <div class="card-body">
-<<<<<<< HEAD
-                                <h5 class="card-title">@item.Nome</h5>
-                                <p class="card-text text-muted">@item.Descricao</p>
-                                <h4 class="text-primary">R$ @item.Preco.ToString("N2")</h4>
-=======
+
+                                <!-- LINK PARA DETAILS -->
                                 <a asp-controller="Home" asp-action="Details" asp-route-id="@item.Id" class="detail">
                                     <h5 class="card-title">@item.Nome</h5>
                                     <p class="card-text text-muted">@item.Descricao</p>
-                                    <h4 class="text-primary">R$ @item.Preco.ToString("N2")</h4>
+                                    <h4 class="text-primary">
+                                        R$ @item.Preco.ToString("N2")
+                                    </h4>
                                 </a>
->>>>>>> 0f849d2fca9229b35a954ee26120d01e7a34f2ce
-                                <a href="#" class="btn btn-success w-100">Comprar</a>
+
+                                <a href="#" class="btn btn-success w-100">
+                                    Comprar
+                                </a>
+
+                                <!-- BOTÃO EDITAR (SEU) -->
+                                <a href="/Produto/Editar/@item.Id" class="btn btn-warning w-100 mt-2">
+                                    Editar
+                                </a>
+
                             </div>
                         </div>
                     </div>
                 }
+
             </div>
         </div>
     </div>
 </section>
 
+<!-- PERSONAGENS -->
 <section class="personagens">
-    <img src="char1.jpg">
-    <img src="char2.jpg">
-    <img src="char3.jpg">
-    <img src="char4.jpg">
+    <img src="/images/char1.jpg">
+    <img src="/images/char2.jpg">
+    <img src="/images/char3.jpg">
+    <img src="/images/char4.jpg">
 </section>
 
 <section class="destaques">
-
 </section>
