@@ -1,25 +1,30 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using EcommerceMVC.Models;
 using Microsoft.Data.Sqlite;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace EcommerceMVC.Controllers
 {
     public class ProdutoController : Controller
     {
-        string connectionString = "Data Source=database/database.db;";
+        private const string ConnectionString = "Data Source=database/database.db;";
 
-        // GET: /Produto/Editar/1
+        // =========================
+        // 🔥 EDITAR (SEU CÓDIGO)
+        // =========================
+
         public IActionResult Editar(int id)
         {
             Produto produto = null;
 
-            using (var connection = new SqliteConnection(connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 connection.Open();
 
                 var command = connection.CreateCommand();
-                command.CommandText = "SELECT id, nome, descricao, preco, imagem FROM Produto WHERE id = @id";
+                command.CommandText = "SELECT id, nome, descricao, preco, imagem FROM produto WHERE id = @id";
                 command.Parameters.AddWithValue("@id", id);
 
                 using (var reader = command.ExecuteReader())
@@ -44,17 +49,16 @@ namespace EcommerceMVC.Controllers
             return View(produto);
         }
 
-        // POST: salvar edição no banco
         [HttpPost]
         public IActionResult Editar(Produto produto)
         {
-            using (var connection = new SqliteConnection(connectionString))
+            using (var connection = new SqliteConnection(ConnectionString))
             {
                 connection.Open();
 
                 var command = connection.CreateCommand();
                 command.CommandText = @"
-                    UPDATE Produto 
+                    UPDATE produto 
                     SET nome = @nome, 
                         descricao = @descricao, 
                         preco = @preco, 
@@ -71,6 +75,131 @@ namespace EcommerceMVC.Controllers
             }
 
             return RedirectToAction("Index", "Home");
+        }
+
+        // =========================
+        // 🔥 GERENCIAMENTO (DOS AMIGOS)
+        // =========================
+
+        public IActionResult Gerenciamento()
+        {
+            var listaProdutos = new List<Produto>();
+            SQLitePCL.Batteries_V2.Init();
+
+            try
+            {
+                using (var connection = new SqliteConnection(ConnectionString))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = "SELECT id, nome, descricao, preco, estoque, imagem FROM produto";
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            listaProdutos.Add(new Produto
+                            {
+                                Id = reader.GetInt32(0),
+                                Nome = reader.GetString(1),
+                                Descricao = reader.IsDBNull(2) ? "" : reader.GetString(2),
+                                Preco = reader.GetDecimal(3),
+                                Estoque = reader.GetInt32(4),
+                                Imagem = reader.IsDBNull(5) ? "sem-foto.jpg" : reader.GetString(5)
+                            });
+                        }
+                    }
+                }
+                return View(listaProdutos);
+            }
+            catch
+            {
+                return BadRequest("Erro ao carregar banco de dados.");
+            }
+        }
+
+        // =========================
+        // 🔥 DELETE (DOS AMIGOS)
+        // =========================
+
+        [HttpGet]
+        public ActionResult Delete(int id)
+        {
+            if (id <= 0) return BadRequest();
+
+            try
+            {
+                using var connection = new SqliteConnection(ConnectionString);
+                connection.Open();
+
+                using var command = connection.CreateCommand();
+                command.CommandText = "SELECT id, nome, descricao, preco, estoque, imagem FROM produto WHERE id = $id";
+                command.Parameters.AddWithValue("$id", id);
+
+                using var reader = command.ExecuteReader();
+                if (!reader.Read()) return NotFound();
+
+                var produto = MapProduto(reader);
+
+                if (!PodeExcluirProduto(produto, out var motivo))
+                {
+                    TempData["ErroExclusao"] = motivo;
+                    return RedirectToAction(nameof(Gerenciamento));
+                }
+
+                return View(produto);
+            }
+            catch
+            {
+                return RedirectToAction(nameof(Gerenciamento));
+            }
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            try
+            {
+                using var connection = new SqliteConnection(ConnectionString);
+                connection.Open();
+
+                using var deleteCommand = connection.CreateCommand();
+                deleteCommand.CommandText = "DELETE FROM produto WHERE id = $id";
+                deleteCommand.Parameters.AddWithValue("$id", id);
+
+                deleteCommand.ExecuteNonQuery();
+
+                return RedirectToAction(nameof(Gerenciamento));
+            }
+            catch
+            {
+                return RedirectToAction(nameof(Gerenciamento));
+            }
+        }
+
+        private static bool PodeExcluirProduto(Produto produto, out string motivo)
+        {
+            if (produto.Estoque > 0)
+            {
+                motivo = "Estoque maior que zero não permitido.";
+                return false;
+            }
+            motivo = "";
+            return true;
+        }
+
+        private static Produto MapProduto(SqliteDataReader reader)
+        {
+            return new Produto
+            {
+                Id = reader.GetInt32(0),
+                Nome = reader.GetString(1),
+                Descricao = reader.IsDBNull(2) ? "" : reader.GetString(2),
+                Preco = reader.IsDBNull(3) ? 0 : reader.GetDecimal(3),
+                Estoque = reader.IsDBNull(4) ? 0 : reader.GetInt32(4),
+                Imagem = reader.IsDBNull(5) ? "sem-foto.jpg" : reader.GetString(5)
+            };
         }
     }
 }

@@ -68,5 +68,43 @@ namespace EcommerceMVC.Controllers
                 RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
             });
         }
+        public IActionResult Gerenciamento()
+        {
+            var listaProdutos = new List<Produto>();
+            SQLitePCL.Batteries_V2.Init();
+            string connectionString = "Data Source=database/database.db;";
+
+            try
+            {
+                using (var connection = new SqliteConnection(connectionString))
+                {
+                    connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = "SELECT id, nome, descricao, preco, estoque, imagem FROM Produto";
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            listaProdutos.Add(new Produto
+                            {
+                                Id = reader.GetInt32(0),
+                                Nome = reader.GetString(1),
+                                Descricao = reader.IsDBNull(2) ? "" : reader.GetString(2),
+                                Preco = reader.GetDecimal(3),
+                                Estoque = reader.GetInt32(4), // Corrigido o índice para o estoque
+                                Imagem = reader.IsDBNull(5) ? "sem-foto.jpg" : reader.GetString(5)
+                            });
+                        }
+                    }
+                }
+                return View(listaProdutos);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.DbState = "Erro: " + ex.Message;
+                return View(new List<Produto>());
+            }
+        }
     }
 }
