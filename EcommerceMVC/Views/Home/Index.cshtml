@@ -46,6 +46,9 @@
     .destaques {
         padding: 20px;
     }
+    .detail {
+        text-decoration: none;
+    }
 </style>
 <section>
         <a href="./carrinho.html" class="btn btn-primary">
@@ -66,16 +69,12 @@
                         <div class="card shadow-sm">
                             <img src="/img/@item.Imagem" class="card-img-top" alt="@item.Nome">
                             <div class="card-body">
-                                <h5 class="card-title">@item.Nome</h5>
-                                <p class="card-text text-muted">@item.Descricao</p>
-                                <h4 class="text-primary">R$ @item.Preco.ToString("N2")</h4>
-                                <a href="#" class="btn btn-success w-100">Comprar</a>
-                                <a asp-controller="Produto"
-                                   asp-action="Delete"
-                                   asp-route-id="@item.Id"
-                                   class="btn btn-danger">
-                                    Deletar Produto
+                                <a asp-controller="Home" asp-action="Details" asp-route-id="@item.Id" class="detail">
+                                    <h5 class="card-title">@item.Nome</h5>
+                                    <p class="card-text text-muted">@item.Descricao</p>
+                                    <h4 class="text-primary">R$ @item.Preco.ToString("N2")</h4>
                                 </a>
+                                <a href="#" class="btn btn-success w-100">Comprar</a>
                             </div>
                         </div>
                     </div>
