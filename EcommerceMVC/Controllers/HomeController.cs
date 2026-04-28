@@ -10,15 +10,19 @@ namespace EcommerceMVC.Controllers
         public IActionResult Index()
         {
             var listaProdutos = new List<Produto>();
+
             SQLitePCL.Batteries_V2.Init();
             string connectionString = "Data Source=database/database.db;";
+
             try
             {
                 using (var connection = new SqliteConnection(connectionString))
                 {
                     connection.Open();
+
                     var command = connection.CreateCommand();
                     command.CommandText = "SELECT id, nome, descricao, preco, estoque, imagem FROM Produto";
+
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -29,8 +33,12 @@ namespace EcommerceMVC.Controllers
                                 Nome = reader.GetString(1),
                                 Descricao = reader.IsDBNull(2) ? "" : reader.GetString(2),
                                 Preco = reader.GetDecimal(3),
-                                Estoque = reader.GetInt32(0),
-                                Imagem = reader.IsDBNull(4) ? "sem-foto.jpg" : reader.GetString(4)
+
+                                // ✔ CORRIGIDO
+                                Estoque = reader.GetInt32(4),
+
+                                // ✔ CORRIGIDO (ANTES ERA 4, AGORA É 5)
+                                Imagem = reader.IsDBNull(5) ? "sem-imagem.jpg" : reader.GetString(5)
                             });
                         }
                     }
@@ -38,12 +46,11 @@ namespace EcommerceMVC.Controllers
 
                 return View(listaProdutos);
             }
-
-
             catch (Exception ex)
             {
                 ViewBag.DbState = "Erro: " + ex.Message;
             }
+
             ViewData["Message"] = "Projeto de E-commerce iniciado!";
             return View(new List<Produto>());
         }
@@ -56,7 +63,10 @@ namespace EcommerceMVC.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            });
         }
     }
 }
