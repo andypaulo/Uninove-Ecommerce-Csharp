@@ -1,0 +1,248 @@
+@model EcommerceMVC.Models.Produto
+@{
+    ViewData["Title"] = "Detalhes do Produto";
+}
+
+<style>
+    body {
+        background-color: #141414;
+        color: #FFFFFF;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .produto-detalhe {
+        display: flex;
+        gap: 40px;
+        padding: 40px;
+        align-items: flex-start;
+    }
+
+    .thumbnails {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .thumbnails img {
+        width: 70px;
+        height: 95px;
+        object-fit: cover;
+        border: 2px solid #333;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .thumbnails img:hover {
+        border-color: #00A6FF;
+    }
+
+    .imagem-principal img {
+        width: 300px;
+        aspect-ratio: 2 / 3;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .produto-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .produto-info h1 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #FFFFFF;
+        line-height: 1.4;
+    }
+
+    .produto-info .preco {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #FFFFFF;
+    }
+
+    .produto-info p {
+        font-size: 0.95rem;
+        color: #AAAAAA;
+        line-height: 1.6;
+    }
+
+    .box-compra {
+        width: 280px;
+        background-color: #202020;
+        border-radius: 10px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        flex-shrink: 0;
+    }
+
+    .box-compra .estoque {
+        font-size: 0.85rem;
+        color: #AAAAAA;
+    }
+
+    .box-compra .estoque strong {
+        display: block;
+        color: #FFFFFF;
+        margin-bottom: 4px;
+    }
+
+    .btn-comprar {
+        width: 100%;
+        padding: 12px;
+        background-color: #00A6FF;
+        color: #000000;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .btn-comprar:hover {
+        background-color: #0090e0;
+    }
+
+    .btn-carrinho {
+        width: 100%;
+        padding: 12px;
+        background-color: #A8E0FF;
+        color: #141414;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .btn-carrinho:hover {
+        background-color: #8fd4f7;
+    }
+
+    .descricao-section {
+        padding: 0 40px 40px;
+    }
+
+    .descricao-section h2 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #FFFFFF;
+        margin-bottom: 16px;
+    }
+
+    .relacionados {
+        padding: 0 40px 60px;
+        border-top: 1px solid #2a2a2a;
+        padding-top: 32px;
+    }
+
+    .relacionados h2 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #FFFFFF;
+        margin-bottom: 20px;
+    }
+
+    .relacionados .card {
+        background-color: #202020;
+        border: 1px solid #2a2a2a;
+        border-radius: 8px;
+        overflow: hidden;
+        color: #FFFFFF;
+    }
+
+    .relacionados .card img {
+        width: 100%;
+        aspect-ratio: 2 / 3;
+        object-fit: cover;
+    }
+
+    .relacionados .card-body {
+        padding: 10px;
+    }
+
+    .relacionados .card-text {
+        font-size: 0.78rem;
+        color: #AAAAAA;
+        margin-bottom: 4px;
+    }
+
+    .relacionados .card-preco {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #FFFFFF;
+    }
+</style>
+
+<a href="/" style="position:fixed; top:20px; left:20px; color:#FFFFFF; font-size:1.5rem; text-decoration:none; z-index:999;">&#8592;</a>
+
+<div class="produto-detalhe">
+
+    <div style="display:flex; gap:12px;">
+        <div class="thumbnails">
+            <img src="/img/@Model.Imagem" alt="@Model.Nome" onclick="document.getElementById('imgPrincipal').src=this.src" />
+        </div>
+        <div class="imagem-principal">
+            <img id="imgPrincipal" src="/img/@Model.Imagem" alt="@Model.Nome" />
+        </div>
+    </div>
+
+    <div class="produto-info">
+        <h1>@Model.Nome</h1>
+        <div class="preco">R$ @Model.Preco.ToString("N2")</div>
+        <p>@Model.Descricao</p>
+    </div>
+
+    <div class="box-compra">
+        <div class="estoque">
+            <strong>Estoque disponível</strong>
+            Quantidade: @Model.Estoque unidade@(Model.Estoque != 1 ? "s" : "")
+        </div>
+
+        <form asp-controller="Home" asp-action="ComprarAgora" method="post">
+            <input type="hidden" name="produtoId" value="@Model.Id" />
+            <button type="submit" class="btn-comprar">Comprar agora</button>
+        </form>
+
+        <form asp-controller="Home" asp-action="AdicionarCarrinho" method="post">
+            <input type="hidden" name="produtoId" value="@Model.Id" />
+            <button type="submit" class="btn-carrinho">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
+                </svg> Adicionar ao carrinho
+            </button>
+        </form>
+    </div>
+
+</div>
+<div class="descricao-section">
+    <h2>O que você precisa saber sobre este produto:</h2>
+    <p>@Model.Descricao</p>
+</div>
+
+<div class="relacionados">
+    <h2>Produtos relacionados</h2>
+    <div class="row">
+        @if (ViewBag.Relacionados != null)
+        {
+            @foreach (var item in ViewBag.Relacionados)
+            {
+                <div class="col-md-3 mb-3">
+                    <div class="card">
+                        <img src="/img/@item.Imagem" alt="@item.Nome" />
+                        <div class="card-body">
+                            <p class="card-text">@item.Nome</p>
+                            <p class="card-preco">R$ @item.Preco.ToString("N2")</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
