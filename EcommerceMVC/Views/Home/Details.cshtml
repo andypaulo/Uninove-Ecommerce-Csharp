@@ -186,10 +186,23 @@
 
     <div style="display:flex; gap:12px;">
         <div class="thumbnails">
-            <img src="/img/@Model.Imagem" alt="@Model.Nome" onclick="document.getElementById('imgPrincipal').src=this.src" />
+            <img src="@(string.IsNullOrEmpty(Model.Imagem)
+                ? Url.Content("~/images/sem-foto.jpg")
+                : (Model.Imagem.StartsWith("http")
+                    ? Model.Imagem
+                    : Url.Content("~/images/" + Model.Imagem)))"
+                alt="@Model.Nome"
+                onclick="document.getElementById('imgPrincipal').src=this.src" />
         </div>
         <div class="imagem-principal">
-            <img id="imgPrincipal" src="/img/@Model.Imagem" alt="@Model.Nome" />
+        @{
+            var imagem = string.IsNullOrEmpty(Model.Imagem) ? "sem-foto.jpg" : Model.Imagem;
+            var src = imagem.StartsWith("http") 
+                ? imagem 
+                : Url.Content("~/images/" + imagem);
+        }
+
+        <img id="imgPrincipal" src="@src" alt="@Model.Nome" />
         </div>
     </div>
 
@@ -235,7 +248,14 @@
             {
                 <div class="col-md-3 mb-3">
                     <div class="card">
-                        <img src="/img/@item.Imagem" alt="@item.Nome" />
+                        @{
+                            var imgRel = string.IsNullOrEmpty(item.Imagem) ? "sem-foto.jpg" : item.Imagem;
+                            var srcRel = imgRel.StartsWith("http") 
+                                ? imgRel 
+                                : Url.Content("~/images/" + imgRel);
+                        }
+
+                        <img src="@srcRel" alt="@item.Nome" />
                         <div class="card-body">
                             <p class="card-text">@item.Nome</p>
                             <p class="card-preco">R$ @item.Preco.ToString("N2")</p>

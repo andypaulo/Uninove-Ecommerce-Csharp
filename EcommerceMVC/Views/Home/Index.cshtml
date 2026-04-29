@@ -75,9 +75,13 @@
                         <div class="card shadow-sm">
 
                             <!-- IMAGEM (corrigida + fallback) -->
-                            <img src="~/images/@(string.IsNullOrEmpty(item.Imagem) ? "sem-foto.jpg" : item.Imagem)"
-                                 class="card-img-top"
-                                 alt="@item.Nome">
+                            <img src="@(string.IsNullOrEmpty(item.Imagem)
+                                ? Url.Content("~/images/sem-foto.jpg")
+                                : (item.Imagem.StartsWith("http")
+                                    ? item.Imagem
+                                    : Url.Content("~/images/" + item.Imagem)))"
+                                class="card-img-top"
+                                alt="@item.Nome">
 
                             <div class="card-body">
 

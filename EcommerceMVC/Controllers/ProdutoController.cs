@@ -12,7 +12,7 @@ namespace EcommerceMVC.Controllers
 
         public IActionResult Editar(int id)
         {
-            Produto produto = null;
+            Produto? produto = null;
 
             using (var connection = new SqliteConnection(ConnectionString))
             {
@@ -35,7 +35,7 @@ namespace EcommerceMVC.Controllers
                             Descricao = reader.IsDBNull(2) ? "" : reader.GetString(2),
                             Preco = reader.GetDecimal(3),
                             Imagem = reader.IsDBNull(4) ? "" : reader.GetString(4),
-                            Estoque = reader.IsDBNull(5) ? 0 : reader.GetInt32(5) // ✅ IMPORTANTE
+                            Estoque = reader.IsDBNull(5) ? 0 : reader.GetInt32(5) // 
                         };
                     }
                 }
@@ -70,7 +70,7 @@ namespace EcommerceMVC.Controllers
                 command.Parameters.AddWithValue("@descricao", produto.Descricao ?? "");
                 command.Parameters.AddWithValue("@preco", produto.Preco);
                 command.Parameters.AddWithValue("@imagem", produto.Imagem ?? "");
-                command.Parameters.AddWithValue("@estoque", produto.Estoque); // ✅ IMPORTANTE
+                command.Parameters.AddWithValue("@estoque", produto.Estoque); // 
 
                 command.ExecuteNonQuery();
             }
