@@ -3,17 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using EcommerceMVC.Models;
 using Microsoft.Data.Sqlite;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace EcommerceMVC.Controllers
 {
     public class ProdutoController : Controller
     {
         private const string ConnectionString = "Data Source=database/database.db;";
-
-        // =========================
-        // 🔥 EDITAR (SEU CÓDIGO)
-        // =========================
 
         public IActionResult Editar(int id)
         {
@@ -24,7 +19,9 @@ namespace EcommerceMVC.Controllers
                 connection.Open();
 
                 var command = connection.CreateCommand();
-                command.CommandText = "SELECT id, nome, descricao, preco, imagem FROM produto WHERE id = @id";
+
+                // ✅ CORRIGIDO (agora inclui estoque)
+                command.CommandText = "SELECT id, nome, descricao, preco, imagem, estoque FROM produto WHERE id = @id";
                 command.Parameters.AddWithValue("@id", id);
 
                 using (var reader = command.ExecuteReader())
@@ -37,7 +34,8 @@ namespace EcommerceMVC.Controllers
                             Nome = reader.GetString(1),
                             Descricao = reader.IsDBNull(2) ? "" : reader.GetString(2),
                             Preco = reader.GetDecimal(3),
-                            Imagem = reader.IsDBNull(4) ? "" : reader.GetString(4)
+                            Imagem = reader.IsDBNull(4) ? "" : reader.GetString(4),
+                            Estoque = reader.IsDBNull(5) ? 0 : reader.GetInt32(5) // ✅ IMPORTANTE
                         };
                     }
                 }
@@ -57,12 +55,14 @@ namespace EcommerceMVC.Controllers
                 connection.Open();
 
                 var command = connection.CreateCommand();
+
                 command.CommandText = @"
                     UPDATE produto 
                     SET nome = @nome, 
                         descricao = @descricao, 
                         preco = @preco, 
-                        imagem = @imagem 
+                        imagem = @imagem,
+                        estoque = @estoque
                     WHERE id = @id";
 
                 command.Parameters.AddWithValue("@id", produto.Id);
@@ -70,16 +70,13 @@ namespace EcommerceMVC.Controllers
                 command.Parameters.AddWithValue("@descricao", produto.Descricao ?? "");
                 command.Parameters.AddWithValue("@preco", produto.Preco);
                 command.Parameters.AddWithValue("@imagem", produto.Imagem ?? "");
+                command.Parameters.AddWithValue("@estoque", produto.Estoque); // ✅ IMPORTANTE
 
                 command.ExecuteNonQuery();
             }
 
             return RedirectToAction("Index", "Home");
         }
-
-        // =========================
-        // 🔥 GERENCIAMENTO (DOS AMIGOS)
-        // =========================
 
         public IActionResult Gerenciamento()
         {
@@ -117,10 +114,6 @@ namespace EcommerceMVC.Controllers
                 return BadRequest("Erro ao carregar banco de dados.");
             }
         }
-
-        // =========================
-        // 🔥 DELETE (DOS AMIGOS)
-        // =========================
 
         [HttpGet]
         public ActionResult Delete(int id)
