@@ -21,7 +21,7 @@ namespace EcommerceMVC.Controllers
                 var command = connection.CreateCommand();
 
                 // ✅ CORRIGIDO (agora inclui estoque)
-                command.CommandText = "SELECT id, nome, descricao, preco, imagem, estoque FROM produto WHERE id = @id";
+                command.CommandText = "SELECT id, nome, descricao, preco, imagem, estoque, categoria FROM produto WHERE id = @id";
                 command.Parameters.AddWithValue("@id", id);
 
                 using (var reader = command.ExecuteReader())
@@ -35,7 +35,8 @@ namespace EcommerceMVC.Controllers
                             Descricao = reader.IsDBNull(2) ? "" : reader.GetString(2),
                             Preco = reader.GetDecimal(3),
                             Imagem = reader.IsDBNull(4) ? "" : reader.GetString(4),
-                            Estoque = reader.IsDBNull(5) ? 0 : reader.GetInt32(5) // 
+                            Estoque = reader.IsDBNull(5) ? 0 : reader.GetInt32(5),
+                            Categoria = reader.IsDBNull(6) ? "" : reader.GetString(6)
                         };
                     }
                 }
@@ -89,7 +90,7 @@ namespace EcommerceMVC.Controllers
                 {
                     connection.Open();
                     var command = connection.CreateCommand();
-                    command.CommandText = "SELECT id, nome, descricao, preco, estoque, imagem FROM produto";
+                    command.CommandText = "SELECT id, nome, descricao, preco, estoque, imagem, categoria FROM produto";
 
                     using (var reader = command.ExecuteReader())
                     {
@@ -101,8 +102,9 @@ namespace EcommerceMVC.Controllers
                                 Nome = reader.GetString(1),
                                 Descricao = reader.IsDBNull(2) ? "" : reader.GetString(2),
                                 Preco = reader.GetDecimal(3),
-                                Estoque = reader.GetInt32(4),
-                                Imagem = reader.IsDBNull(5) ? "sem-foto.jpg" : reader.GetString(5)
+                                Estoque = reader.IsDBNull(4) ? 0 : reader.GetInt32(4),
+                                Imagem = reader.IsDBNull(5) ? "sem-foto.jpg" : reader.GetString(5),
+                                Categoria = reader.IsDBNull(6) ? "" : reader.GetString(6)
                             });
                         }
                     }
@@ -126,7 +128,7 @@ namespace EcommerceMVC.Controllers
                 connection.Open();
 
                 using var command = connection.CreateCommand();
-                command.CommandText = "SELECT id, nome, descricao, preco, estoque, imagem FROM produto WHERE id = $id";
+                command.CommandText = "SELECT id, nome, descricao, preco, estoque, imagem, categoria FROM produto WHERE id = $id";
                 command.Parameters.AddWithValue("$id", id);
 
                 using var reader = command.ExecuteReader();
@@ -191,7 +193,8 @@ namespace EcommerceMVC.Controllers
                 Descricao = reader.IsDBNull(2) ? "" : reader.GetString(2),
                 Preco = reader.IsDBNull(3) ? 0 : reader.GetDecimal(3),
                 Estoque = reader.IsDBNull(4) ? 0 : reader.GetInt32(4),
-                Imagem = reader.IsDBNull(5) ? "sem-foto.jpg" : reader.GetString(5)
+                Imagem = reader.IsDBNull(5) ? "sem-foto.jpg" : reader.GetString(5),
+                Categoria = reader.IsDBNull(6) ? "" : reader.GetString(6)
             };
         }
     
@@ -213,15 +216,16 @@ namespace EcommerceMVC.Controllers
                 var command = connection.CreateCommand();
 
                 command.CommandText = @"INSERT INTO produto
-                (nome, descricao, preco, estoque, imagem)
+                (nome, descricao, preco, estoque, imagem, categoria)
                 VALUES
-                (@nome, @descricao, @preco, @estoque, @imagem)";
+                (@nome, @descricao, @preco, @estoque, @imagem, @categoria)";
 
                 command.Parameters.AddWithValue("@nome", produto.Nome);
                 command.Parameters.AddWithValue("@descricao", produto.Descricao ?? "");
                 command.Parameters.AddWithValue("@preco", produto.Preco);
                 command.Parameters.AddWithValue("@estoque", produto.Estoque);
                 command.Parameters.AddWithValue("@imagem", produto.Imagem ?? "");
+                command.Parameters.AddWithValue("@categoria", produto.Categoria);
 
                 command.ExecuteNonQuery();
 

@@ -68,6 +68,37 @@
         <div class="container mt-4">
             <h2 class="mb-4">Produtos em Destaque</h2>
 
+            <form method="get" asp-action="Index" class="mb-4">
+
+                <div class="row justify-content-center">
+
+                    <div class="col-md-4">
+
+                        <select name="categoria" class="form-control">
+
+                            <option value="">Todas Categorias</option>
+                            <option value="Ação">Ação</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Terror">Terror</option>
+                            <option value="Fantasia">Fantasia</option>
+                            <option value="Drama">Drama</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-2">
+
+                        <button type="submit" class="btn btn-dark w-100">
+                            Filtrar
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
             <div class="row">
                 @foreach (var item in Model)
                 {

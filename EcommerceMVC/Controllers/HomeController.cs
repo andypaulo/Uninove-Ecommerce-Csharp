@@ -1,13 +1,14 @@
 using EcommerceMVC.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 using Microsoft.Data.Sqlite;
+using System.Diagnostics;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace EcommerceMVC.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Index(string? categoria)
         {
             var listaProdutos = new List<Produto>();
 
@@ -21,7 +22,21 @@ namespace EcommerceMVC.Controllers
                     connection.Open();
 
                     var command = connection.CreateCommand();
-                    command.CommandText = "SELECT id, nome, descricao, preco, estoque, imagem FROM Produto";
+                    if (!string.IsNullOrEmpty(categoria))
+                    {
+                        command.CommandText = @"
+                         SELECT id, nome, descricao, preco, imagem, estoque, categoria
+                         FROM Produto
+                         WHERE categoria = @categoria";
+
+                        command.Parameters.AddWithValue("@categoria", categoria);
+                    }
+                    else
+                    {
+                        command.CommandText = @"
+                         SELECT id, nome, descricao, preco, imagem, estoque, categoria
+                         FROM Produto";
+                    }
 
                     using (var reader = command.ExecuteReader())
                     {
@@ -38,7 +53,8 @@ namespace EcommerceMVC.Controllers
                                 Estoque = reader.GetInt32(4),
 
                                 // ✔ CORRIGIDO (ANTES ERA 4, AGORA É 5)
-                                Imagem = reader.IsDBNull(5) ? "sem-imagem.jpg" : reader.GetString(5)
+                                Imagem = reader.IsDBNull(5) ? "sem-imagem.jpg" : reader.GetString(5),
+                                Categoria = reader.IsDBNull(6) ? "" : reader.GetString(6)
                             });
                         }
                     }
