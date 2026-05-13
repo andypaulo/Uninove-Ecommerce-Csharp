@@ -194,5 +194,43 @@ namespace EcommerceMVC.Controllers
                 Imagem = reader.IsDBNull(5) ? "sem-foto.jpg" : reader.GetString(5)
             };
         }
+    
+[HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create(Produto produto)
+        {
+            try
+            {
+                using var connection = new SqliteConnection(ConnectionString);
+
+                connection.Open();
+
+                var command = connection.CreateCommand();
+
+                command.CommandText = @"INSERT INTO produto
+                (nome, descricao, preco, estoque, imagem)
+                VALUES
+                (@nome, @descricao, @preco, @estoque, @imagem)";
+
+                command.Parameters.AddWithValue("@nome", produto.Nome);
+                command.Parameters.AddWithValue("@descricao", produto.Descricao ?? "");
+                command.Parameters.AddWithValue("@preco", produto.Preco);
+                command.Parameters.AddWithValue("@estoque", produto.Estoque);
+                command.Parameters.AddWithValue("@imagem", produto.Imagem ?? "");
+
+                command.ExecuteNonQuery();
+
+                return RedirectToAction(nameof(Gerenciamento));
+            }
+            catch
+            {
+                return BadRequest("Erro ao cadastrar produto.");
+            }
+        }
     }
 }
