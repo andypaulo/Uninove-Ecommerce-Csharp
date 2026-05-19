@@ -1,4 +1,5 @@
 @model EcommerceMVC.Models.Produto
+
 @{
     ViewData["Title"] = "Detalhes do Produto";
 }
@@ -9,7 +10,7 @@
         color: #FFFFFF;
         font-family: 'Inter', sans-serif;
     }
-    
+
     .produto-detalhe {
         display: flex;
         gap: 40px;
@@ -180,89 +181,215 @@
     }
 </style>
 
-<a href="/" style="position:fixed; top:20px; left:20px; color:#FFFFFF; font-size:1.5rem; text-decoration:none; z-index:999;">&#8592;</a>
+<a href="/"
+   style="position:fixed; top:20px; left:20px; color:#FFFFFF; font-size:1.5rem; text-decoration:none; z-index:999;">
+
+    &#8592;
+
+</a>
 
 <div class="produto-detalhe">
 
     <div style="display:flex; gap:12px;">
+
         <div class="thumbnails">
+
             <img src="@(string.IsNullOrEmpty(Model.Imagem)
                 ? Url.Content("~/images/sem-foto.jpg")
                 : (Model.Imagem.StartsWith("http")
                     ? Model.Imagem
                     : Url.Content("~/images/" + Model.Imagem)))"
-                alt="@Model.Nome"
-                onclick="document.getElementById('imgPrincipal').src=this.src" />
-        </div>
-        <div class="imagem-principal">
-        @{
-            var imagem = string.IsNullOrEmpty(Model.Imagem) ? "sem-foto.jpg" : Model.Imagem;
-            var src = imagem.StartsWith("http") 
-                ? imagem 
-                : Url.Content("~/images/" + imagem);
-        }
 
-        <img id="imgPrincipal" src="@src" alt="@Model.Nome" />
+                 alt="@Model.Nome"
+
+                 onclick="document.getElementById('imgPrincipal').src=this.src" />
+
         </div>
+
+        <div class="imagem-principal">
+
+            @{
+                var imagem = string.IsNullOrEmpty(Model.Imagem)
+                    ? "sem-foto.jpg"
+                    : Model.Imagem;
+
+                var src = imagem.StartsWith("http")
+                    ? imagem
+                    : Url.Content("~/images/" + imagem);
+            }
+
+            <img id="imgPrincipal"
+                 src="@src"
+                 alt="@Model.Nome" />
+
+        </div>
+
     </div>
 
     <div class="produto-info">
+
         <h1>@Model.Nome</h1>
-        <div class="preco">R$ @Model.Preco.ToString("N2")</div>
+
+        <div class="preco">
+            R$ @Model.Preco.ToString("N2")
+        </div>
+
         <p>@Model.Descricao</p>
+
     </div>
 
     <div class="box-compra">
+
         <div class="estoque">
+
             <strong>Estoque disponível</strong>
-            Quantidade: @Model.Estoque unidade@(Model.Estoque != 1 ? "s" : "")
+
+            Quantidade:
+            @Model.Estoque unidade@(Model.Estoque != 1 ? "s" : "")
+
         </div>
 
-        <form asp-controller="Home" asp-action="ComprarAgora" method="post">
-            <input type="hidden" name="produtoId" value="@Model.Id" />
-            <button type="submit" class="btn-comprar">Comprar agora</button>
+        <form asp-controller="Home"
+              asp-action="ComprarAgora"
+              method="post">
+
+            <input type="hidden"
+                   name="produtoId"
+                   value="@Model.Id" />
+
+            <button type="submit"
+                    class="btn-comprar">
+
+                Comprar agora
+
+            </button>
+
         </form>
 
-        <form asp-controller="Home" asp-action="AdicionarCarrinho" method="post">
-            <input type="hidden" name="produtoId" value="@Model.Id" />
-            <button type="submit" class="btn-carrinho">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
-                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
-                </svg> Adicionar ao carrinho
-            </button>
-        </form>
+        <button class="btn-carrinho"
+                onclick="adicionarCarrinho(@Model.Id)">
+
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 width="24"
+                 height="16"
+                 fill="currentColor"
+                 class="bi bi-cart"
+                 viewBox="0 0 16 16">
+
+                <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
+
+            </svg>
+
+            Adicionar ao carrinho
+
+        </button>
+
     </div>
 
 </div>
+
 <div class="descricao-section">
-    <h2>O que você precisa saber sobre este produto:</h2>
-    <p>@Model.Descricao</p>
+
+    <h2>
+        O que você precisa saber sobre este produto:
+    </h2>
+
+    <p>
+        @Model.Descricao
+    </p>
+
 </div>
 
 <div class="relacionados">
-    <h2>Produtos relacionados</h2>
+
+    <h2>
+        Produtos relacionados
+    </h2>
+
     <div class="row">
+
         @if (ViewBag.Relacionados != null)
         {
             @foreach (var item in ViewBag.Relacionados)
             {
                 <div class="col-md-3 mb-3">
+
                     <div class="card">
+
                         @{
-                            var imgRel = string.IsNullOrEmpty(item.Imagem) ? "sem-foto.jpg" : item.Imagem;
-                            var srcRel = imgRel.StartsWith("http") 
-                                ? imgRel 
+                            var imgRel =
+                                string.IsNullOrEmpty(item.Imagem)
+                                ? "sem-foto.jpg"
+                                : item.Imagem;
+
+                            var srcRel =
+                                imgRel.StartsWith("http")
+                                ? imgRel
                                 : Url.Content("~/images/" + imgRel);
                         }
 
-                        <img src="@srcRel" alt="@item.Nome" />
+                        <img src="@srcRel"
+                             alt="@item.Nome" />
+
                         <div class="card-body">
-                            <p class="card-text">@item.Nome</p>
-                            <p class="card-preco">R$ @item.Preco.ToString("N2")</p>
+
+                            <p class="card-text">
+                                @item.Nome
+                            </p>
+
+                            <p class="card-preco">
+                                R$ @item.Preco.ToString("N2")
+                            </p>
+
                         </div>
+
                     </div>
+
                 </div>
             }
         }
+
     </div>
+
 </div>
+
+<script>
+
+async function adicionarCarrinho(produtoId)
+{
+    try
+    {
+        const response =
+            await fetch('/Carrinho/Adicionar',
+            {
+                method: 'POST',
+
+                headers:
+                {
+                    'Content-Type': 'application/json'
+                },
+
+                body: JSON.stringify(
+                {
+                    produtoId: produtoId
+                })
+            });
+
+        if(response.ok)
+        {
+            alert('Produto adicionado ao carrinho!');
+        }
+        else
+        {
+            alert('Erro ao adicionar produto.');
+        }
+    }
+    catch(error)
+    {
+        console.error(error);
+
+        alert('Erro ao conectar com servidor.');
+    }
+}
+
+</script>
