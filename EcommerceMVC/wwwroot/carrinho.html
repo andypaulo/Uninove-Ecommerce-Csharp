@@ -1,165 +1,289 @@
-    <!DOCTYPE html>
-    <html lang="pt-BR">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Meu Carrinho</title>
-      <style>
-        *, *::before, *::after {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Carrinho</title>
 
-        body {
-          background-color: #121212;
-          color: #ffffff;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Helvetica, Arial, sans-serif;
-          min-height: 100vh;
-          padding: 48px 56px;
-        }
+  <style>
 
-        .cart-layout {
-          display: flex;
-          gap: 48px;
-          max-width: 1100px;
-          margin: 0 auto;
-        }
+    *,
+    *::before,
+    *::after
+    {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        .cart-items {
-          flex: 1.4;
-        }
+    body
+    {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: -apple-system,
+                   BlinkMacSystemFont,
+                   'Segoe UI',
+                   Inter,
+                   Helvetica,
+                   Arial,
+                   sans-serif;
 
-        .cart-items h1 {
-          font-size: 28px;
-          font-weight: 700;
-          letter-spacing: 0.2px;
-          margin-bottom: 32px;
-        }
+      min-height: 100vh;
+      padding: 48px 56px;
+    }
 
-        .item-card {
-          background-color: #1e1e1e;
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 260px;
-          margin-bottom: 20px;
-        }
+    .cart-layout
+    {
+      display: flex;
+      gap: 48px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
 
-        .item-placeholder {
-          width: 140px;
-          height: 200px;
-          background-color: #2a2a2a;
-          border-radius: 6px;
-        }
+    .cart-items
+    {
+      flex: 1.4;
+    }
 
-        .cart-summary {
-          flex: 0.8;
-          padding-top: 68px;
-        }
+    .cart-items h1
+    {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      margin-bottom: 32px;
+    }
 
-        .summary-box h2 {
-          font-size: 22px;
-          font-weight: 700;
-          margin-bottom: 28px;
-        }
+    .item-card
+    {
+      background-color: #1e1e1e;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
 
-        .summary-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: baseline;
-          margin-bottom: 16px;
-        }
+    .item-card img
+    {
+      width: 120px;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
 
-        .summary-label {
-          color: #b3b3b3;
-          font-size: 15px;
-        }
+    .item-info h2
+    {
+      margin-bottom: 10px;
+    }
 
-        .summary-value {
-          color: #ffffff;
-          font-size: 14px;
-          text-align: right;
-        }
+    .item-info p
+    {
+      margin-bottom: 8px;
+      color: #ccc;
+    }
 
-        .summary-divider {
-          border: none;
-          border-top: 1px solid #404040;
-          margin: 24px 0;
-        }
+    .cart-summary
+    {
+      flex: 0.8;
+      padding-top: 68px;
+    }
 
-        .btn-checkout {
-          display: block;
-          width: 100%;
-          padding: 16px 0;
-          background-color: #00a9ff;
-          color: #ffffff;
-          font-size: 16px;
-          font-weight: 600;
-          text-align: center;
-          border: none;
-          border-radius: 0;
-          cursor: pointer;
-          transition: background-color 0.2s ease;
-          text-decoration: none;
-        }
+    .summary-box h2
+    {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 28px;
+    }
 
-        .btn-checkout:hover {
-          background-color: #008fdb;
-        }
+    .summary-row
+    {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 16px;
+    }
 
-        @media (max-width: 768px) {
-          body { padding: 28px 20px; }
+    .summary-label
+    {
+      color: #b3b3b3;
+      font-size: 15px;
+    }
 
-          .cart-layout {
-            flex-direction: column;
-            gap: 36px;
-          }
+    .summary-value
+    {
+      color: #ffffff;
+      font-size: 14px;
+      text-align: right;
+    }
 
-          .cart-summary {
-            padding-top: 0;
-          }
-        }
-      </style>
-    </head>
-    <body>
+    .summary-divider
+    {
+      border: none;
+      border-top: 1px solid #404040;
+      margin: 24px 0;
+    }
 
-      <div class="cart-layout">
+    .btn-checkout
+    {
+      display: block;
+      width: 100%;
+      padding: 16px 0;
+      background-color: #00a9ff;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      text-decoration: none;
+    }
 
-        <section class="cart-items">
-          <h1>Meu carrinho</h1>
+    .btn-checkout:hover
+    {
+      background-color: #008fdb;
+    }
 
-          <div class="item-card">
-            <div class="item-placeholder"></div>
-          </div>
+    @media (max-width: 768px)
+    {
+      body
+      {
+        padding: 28px 20px;
+      }
 
-          <div class="item-card">
-            <div class="item-placeholder"></div>
-          </div>
-        </section>
+      .cart-layout
+      {
+        flex-direction: column;
+        gap: 36px;
+      }
 
-        <aside class="cart-summary">
-          <div class="summary-box">
-            <h2>Resumo</h2>
+      .cart-summary
+      {
+        padding-top: 0;
+      }
 
-            <div class="summary-row">
-              <span class="summary-label">Preço</span>
-              <span class="summary-value">R$ 0,00</span>
-            </div>
+      .item-card
+      {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
 
-            <div class="summary-row">
-              <span class="summary-label">Impostos</span>
-              <span class="summary-value">Calculado ao finalizar</span>
-            </div>
+  </style>
+</head>
 
-            <hr class="summary-divider">
+<body>
+  <a href="/" style="position:fixed; top:20px; left:20px; color:#FFFFFF; font-size:1.5rem; text-decoration:none; z-index:999;">&#8592;</a>
 
-            <button class="btn-checkout" type="button">Finalizar compra</button>
-          </div>
-        </aside>
+  <div class="cart-layout">
+
+    <section class="cart-items">
+
+      <h1>Meu carrinho</h1>
+
+    </section>
+
+    <aside class="cart-summary">
+
+      <div class="summary-box">
+
+        <h2>Resumo</h2>
+
+        <div class="summary-row">
+          <span class="summary-label">
+            Preço
+          </span>
+
+          <span class="summary-value">
+            R$ 0,00
+          </span>
+        </div>
+
+        <div class="summary-row">
+          <span class="summary-label">
+            Impostos
+          </span>
+
+          <span class="summary-value">
+            Calculado ao finalizar
+          </span>
+        </div>
+
+        <hr class="summary-divider">
+
+        <button
+          class="btn-checkout"
+          type="button">
+
+          Finalizar compra
+
+        </button>
 
       </div>
 
-    </body>
-    </html>
+    </aside>
+
+  </div>
+
+  <script>
+
+    async function carregarCarrinho()
+    {
+      const response =
+        await fetch('/Carrinho/ObterItens');
+
+      const itens =
+        await response.json();
+
+      const cartItems =
+        document.querySelector('.cart-items');
+
+      const summaryValue =
+        document.querySelector('.summary-value');
+
+      let total = 0;
+
+      itens.forEach(item =>
+      {
+        total +=
+          item.preco * item.quantidade;
+
+        cartItems.innerHTML += `
+        
+        <div class="item-card">
+
+          <img src="${item.imagem}">
+
+          <div class="item-info">
+
+            <h2>
+              ${item.nome}
+            </h2>
+
+            <p>
+              Quantidade:
+              ${item.quantidade}
+            </p>
+
+            <h3>
+              R$ ${item.preco.toFixed(2)}
+            </h3>
+
+          </div>
+
+        </div>
+
+        `;
+      });
+
+      summaryValue.innerText =
+        `R$ ${total.toFixed(2)}`;
+    }
+
+    carregarCarrinho();
+
+  </script>
+
+</body>
+</html>

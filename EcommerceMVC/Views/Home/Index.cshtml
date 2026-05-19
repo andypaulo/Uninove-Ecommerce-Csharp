@@ -5,7 +5,7 @@
 }
 
 <style>
-    /* SEÇÃO DE MANGÁS */
+
     .mangas {
         padding: 20px;
     }
@@ -13,6 +13,7 @@
     .card {
         background-color: white;
         padding: 10px;
+        border-radius: 10px;
     }
 
     .card img {
@@ -27,7 +28,6 @@
         transition: 0.3s;
     }
 
-    /* PERSONAGENS */
     .personagens {
         background-color: #222;
         padding: 20px;
@@ -42,7 +42,6 @@
         object-fit: cover;
     }
 
-    /* DESTAQUES */
     .destaques {
         padding: 20px;
     }
@@ -51,103 +50,206 @@
         text-decoration: none;
         color: inherit;
     }
+
 </style>
 
-<section>
-    <a href="./carrinho.html" class="btn btn-primary">
-        Ir para Carrinho HTML
+<section class="mb-4">
+
+    <a href="/carrinho.html"
+       class="btn btn-primary">
+
+        Ir para Carrinho
+
     </a>
 
-    <a asp-controller="Produto" asp-action="Gerenciamento" class="btn btn-dark">
-        Acessar Painel de Gerenciamento
+    <a asp-controller="Produto"
+       asp-action="Gerenciamento"
+       class="btn btn-dark">
+
+        Painel de Gerenciamento
+
     </a>
+
 </section>
 
 <section class="mangas">
-    <div class="text-center">
-        <div class="container mt-4">
-            <h2 class="mb-4">Produtos em Destaque</h2>
 
-            <form method="get" asp-action="Index" class="mb-4">
+    <div class="container mt-4">
 
-                <div class="row justify-content-center">
+        <h2 class="mb-4 text-center">
+            Produtos em Destaque
+        </h2>
 
-                    <div class="col-md-4">
+        <form method="get"
+              asp-action="Index"
+              class="mb-4">
 
-                        <select name="categoria" class="form-control">
+            <div class="row justify-content-center">
 
-                            <option value="">Todas Categorias</option>
-                            <option value="Ação">Ação</option>
-                            <option value="Romance">Romance</option>
-                            <option value="Terror">Terror</option>
-                            <option value="Fantasia">Fantasia</option>
-                            <option value="Drama">Drama</option>
+                <div class="col-md-4">
 
-                        </select>
+                    <select name="categoria"
+                            class="form-control">
 
-                    </div>
+                        <option value="">
+                            Todas Categorias
+                        </option>
 
-                    <div class="col-md-2">
+                        <option value="Ação">
+                            Ação
+                        </option>
 
-                        <button type="submit" class="btn btn-dark w-100">
-                            Filtrar
-                        </button>
+                        <option value="Romance">
+                            Romance
+                        </option>
+
+                        <option value="Terror">
+                            Terror
+                        </option>
+
+                        <option value="Fantasia">
+                            Fantasia
+                        </option>
+
+                        <option value="Drama">
+                            Drama
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <button type="submit"
+                            class="btn btn-dark w-100">
+
+                        Filtrar
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+        <div class="row">
+
+            @foreach (var item in Model)
+            {
+                <div class="col-md-4 mb-4">
+
+                    <div class="card shadow-sm h-100">
+
+                        <img src="@(string.IsNullOrEmpty(item.Imagem)
+                            ? Url.Content("~/images/sem-foto.jpg")
+                            : (item.Imagem.StartsWith("http")
+                                ? item.Imagem
+                                : Url.Content("~/images/" + item.Imagem)))"
+
+                             class="card-img-top"
+                             alt="@item.Nome">
+
+                        <div class="card-body d-flex flex-column">
+
+                            <a asp-controller="Home"
+                               asp-action="Details"
+                               asp-route-id="@item.Id"
+                               class="detail">
+
+                                <h5 class="card-title">
+                                    @item.Nome
+                                </h5>
+
+                                <p class="card-text text-muted">
+                                    @item.Descricao
+                                </p>
+
+                                <h4 class="text-primary">
+                                    R$ @item.Preco.ToString("N2")
+                                </h4>
+
+                            </a>
+
+                            <button onclick="adicionarCarrinho(@item.Id)"
+                                    class="btn btn-success w-100 mt-2">
+
+                                🛒 Adicionar ao Carrinho
+
+                            </button>
+
+                            <a asp-controller="Produto"
+                               asp-action="Editar"
+                               asp-route-id="@item.Id"
+                               class="btn btn-warning w-100 mt-2">
+
+                                Editar
+
+                            </a>
+
+                        </div>
 
                     </div>
 
                 </div>
-
-            </form>
-
-            <div class="row">
-                @foreach (var item in Model)
-                {
-                    <div class="col-md-4 mb-3">
-                        <div class="card shadow-sm">
-
-                            <!-- IMAGEM (corrigida + fallback) -->
-                            <img src="@(string.IsNullOrEmpty(item.Imagem)
-                                ? Url.Content("~/images/sem-foto.jpg")
-                                : (item.Imagem.StartsWith("http")
-                                    ? item.Imagem
-                                    : Url.Content("~/images/" + item.Imagem)))"
-                                class="card-img-top"
-                                alt="@item.Nome">
-
-                            <div class="card-body">
-
-                                <!-- DETALHES (do seu grupo) -->
-                                <a asp-controller="Home" asp-action="Details" asp-route-id="@item.Id" class="detail">
-                                    <h5 class="card-title">@item.Nome</h5>
-                                    <p class="card-text text-muted">@item.Descricao</p>
-                                    <h4 class="text-primary">R$ @item.Preco.ToString("N2")</h4>
-                                </a>
-
-                                <!-- BOTÃO COMPRAR -->
-                                <a href="#" class="btn btn-success w-100">Comprar</a>
-
-                                <!-- 🔥 BOTÃO EDITAR (SEU) -->
-                                <a asp-controller="Produto" asp-action="Editar" asp-route-id="@item.Id"
-                                   class="btn btn-warning w-100 mt-2">
-                                    Editar
-                                </a>
-
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
+            }
 
         </div>
+
     </div>
+
 </section>
 
 <section class="personagens">
+
     <img src="/images/char1.jpg">
     <img src="/images/char2.jpg">
     <img src="/images/char3.jpg">
     <img src="/images/char4.jpg">
+
 </section>
 
 <section class="destaques">
 </section>
+
+<script>
+
+async function adicionarCarrinho(produtoId)
+{
+    try
+    {
+        const response =
+            await fetch('/Carrinho/Adicionar',
+            {
+                method: 'POST',
+
+                headers:
+                {
+                    'Content-Type': 'application/json'
+                },
+
+                body: JSON.stringify(
+                {
+                    produtoId: produtoId
+                })
+            });
+
+        if(response.ok)
+        {
+            alert('Produto adicionado ao carrinho!');
+        }
+        else
+        {
+            alert('Erro ao adicionar produto.');
+        }
+    }
+    catch(error)
+    {
+        console.error(error);
+
+        alert('Erro de conexão com o servidor.');
+    }
+}
+
+</script>
