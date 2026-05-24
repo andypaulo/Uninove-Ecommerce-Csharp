@@ -51,6 +51,41 @@
         color: inherit;
     }
 
+    .paginacao-setas {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 100px;
+        margin-top: 35px;
+    }
+
+    .seta-paginacao {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        border: 3px solid #4a4a4a;
+        color: #4a4a4a;
+        text-decoration: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 22px;
+        font-weight: bold;
+        transition: 0.3s;
+        background-color: white;
+    }
+
+    .seta-paginacao:hover {
+        transform: scale(1.08);
+        color: #222;
+        border-color: #222;
+    }
+
+    .seta-desativada {
+        opacity: 0.3;
+        pointer-events: none;
+    }
+
 </style>
 
 <section class="mb-4">
@@ -194,6 +229,64 @@
 
                 </div>
             }
+
+        </div>
+
+        <div class="paginacao-setas">
+
+            @if (ViewBag.PaginaAtual > 1)
+            {
+                <a href="@Url.Action("Index", new {
+                    pagina = ViewBag.PaginaAtual - 1,
+                    categoria = ViewBag.Categoria
+                })"
+                class="seta-paginacao">
+
+                    ←
+
+                </a>
+            }
+            else
+            {
+                <div class="seta-paginacao seta-desativada">
+
+                    ←
+
+                </div>
+            }
+
+            @if (ViewBag.PaginaAtual < ViewBag.TotalPaginas)
+            {
+                <a href="@Url.Action("Index", new {
+                    pagina = ViewBag.PaginaAtual + 1,
+                    categoria = ViewBag.Categoria
+                })"
+                class="seta-paginacao">
+
+                    →
+
+                </a>
+            }
+            else
+            {
+                <div class="seta-paginacao seta-desativada">
+
+                    →
+
+                </div>
+            }
+
+        </div>
+
+        <div class="d-flex justify-content-center align-items-center gap-3 mt-3">
+
+            <span style="color:white; font-size:18px;">
+
+                Página @ViewBag.PaginaAtual
+                de
+                @ViewBag.TotalPaginas
+
+            </span>
 
         </div>
 

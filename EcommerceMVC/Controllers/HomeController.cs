@@ -8,12 +8,15 @@ namespace EcommerceMVC.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index(string? categoria)
+        public IActionResult Index(string? categoria, int pagina = 1)
         {
             var listaProdutos = new List<Produto>();
 
             SQLitePCL.Batteries_V2.Init();
             string connectionString = "Data Source=database/database.db;";
+
+            int limite = 21;
+            int offset = (pagina - 1) * limite;
 
             try
             {
@@ -22,21 +25,29 @@ namespace EcommerceMVC.Controllers
                     connection.Open();
 
                     var command = connection.CreateCommand();
+
                     if (!string.IsNullOrEmpty(categoria))
                     {
                         command.CommandText = @"
-                         SELECT id, nome, descricao, preco, imagem, estoque, categoria
+                         SELECT id, nome, descricao, preco, estoque, imagem, categoria
                          FROM Produto
-                         WHERE categoria = @categoria";
+                         WHERE categoria = @categoria
+                         LIMIT @limite
+                         OFFSET @offset";
 
                         command.Parameters.AddWithValue("@categoria", categoria);
                     }
                     else
                     {
                         command.CommandText = @"
-                         SELECT id, nome, descricao, preco, imagem, estoque, categoria
-                         FROM Produto";
+                         SELECT id, nome, descricao, preco, estoque, imagem, categoria
+                         FROM Produto
+                         LIMIT @limite
+                         OFFSET @offset";
                     }
+
+                    command.Parameters.AddWithValue("@limite", limite);
+                    command.Parameters.AddWithValue("@offset", offset);
 
                     using (var reader = command.ExecuteReader())
                     {
@@ -48,16 +59,43 @@ namespace EcommerceMVC.Controllers
                                 Nome = reader.GetString(1),
                                 Descricao = reader.IsDBNull(2) ? "" : reader.GetString(2),
                                 Preco = reader.GetDecimal(3),
-
-                                // ✔ CORRIGIDO
                                 Estoque = reader.GetInt32(4),
-
-                                // ✔ CORRIGIDO (ANTES ERA 4, AGORA É 5)
                                 Imagem = reader.IsDBNull(5) ? "sem-imagem.jpg" : reader.GetString(5),
                                 Categoria = reader.IsDBNull(6) ? "" : reader.GetString(6)
                             });
                         }
                     }
+
+                    var totalCommand = connection.CreateCommand();
+
+                    if (!string.IsNullOrEmpty(categoria))
+                    {
+                        totalCommand.CommandText = @"
+                        SELECT COUNT(*)
+                        FROM Produto
+                        WHERE categoria = @categoria";
+
+                        totalCommand.Parameters.AddWithValue("@categoria", categoria);
+                    }
+                    else
+                    {
+                        totalCommand.CommandText =
+                            "SELECT COUNT(*) FROM Produto";
+                    }
+
+                    int totalProdutos =
+                        Convert.ToInt32(
+                            totalCommand.ExecuteScalar()
+                        );
+
+                    int totalPaginas =
+                        (int)Math.Ceiling(
+                            (double)totalProdutos / limite
+                        );
+
+                    ViewBag.PaginaAtual = pagina;
+                    ViewBag.TotalPaginas = totalPaginas;
+                    ViewBag.Categoria = categoria;
                 }
 
                 return View(listaProdutos);
@@ -125,6 +163,7 @@ namespace EcommerceMVC.Controllers
                 RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
             });
         }
+
         public IActionResult Gerenciamento()
         {
             var listaProdutos = new List<Produto>();
@@ -149,12 +188,13 @@ namespace EcommerceMVC.Controllers
                                 Nome = reader.GetString(1),
                                 Descricao = reader.IsDBNull(2) ? "" : reader.GetString(2),
                                 Preco = reader.GetDecimal(3),
-                                Estoque = reader.GetInt32(4), // Corrigido o �ndice para o estoque
+                                Estoque = reader.GetInt32(4),
                                 Imagem = reader.IsDBNull(5) ? "sem-foto.jpg" : reader.GetString(5)
                             });
                         }
                     }
                 }
+
                 return View(listaProdutos);
             }
             catch (Exception ex)

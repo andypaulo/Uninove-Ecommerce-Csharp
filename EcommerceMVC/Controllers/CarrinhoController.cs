@@ -16,7 +16,6 @@ namespace EcommerceMVC.Controllers
 
             connection.Open();
 
-            // CRIAR TABELA CARRINHO
             var criarCarrinho = connection.CreateCommand();
 
             criarCarrinho.CommandText = @"
@@ -27,16 +26,14 @@ namespace EcommerceMVC.Controllers
 
             criarCarrinho.ExecuteNonQuery();
 
-            // CRIAR TABELA ITENS_CARRINHO
             var criarItens = connection.CreateCommand();
 
             criarItens.CommandText = @"
             CREATE TABLE IF NOT EXISTS itens_carrinho (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                carrinhoId INTEGER,
-                produtoId INTEGER,
-                quantidade INTEGER,
-                precoUnitario REAL
+                carrinho_id INTEGER,
+                produto_id INTEGER,
+                quantidade INTEGER
             )";
 
             criarItens.ExecuteNonQuery();
@@ -122,16 +119,16 @@ namespace EcommerceMVC.Controllers
             itemCommand.CommandText = @"
             SELECT id, quantidade
             FROM itens_carrinho
-            WHERE carrinhoId = @carrinhoId
-            AND produtoId = @produtoId";
+            WHERE carrinho_id = @carrinho_id
+            AND produto_id = @produto_id";
 
             itemCommand.Parameters.AddWithValue(
-                "@carrinhoId",
+                "@carrinho_id",
                 carrinhoId
             );
 
             itemCommand.Parameters.AddWithValue(
-                "@produtoId",
+                "@produto_id",
                 produtoId
             );
 
@@ -177,28 +174,23 @@ namespace EcommerceMVC.Controllers
 
                 insert.CommandText = @"
                 INSERT INTO itens_carrinho
-                (carrinhoId, produtoId, quantidade, precoUnitario)
+                (carrinho_id, produto_id, quantidade)
                 VALUES
-                (@carrinhoId, @produtoId, @quantidade, @preco)";
+                (@carrinho_id, @produto_id, @quantidade)";
 
                 insert.Parameters.AddWithValue(
-                    "@carrinhoId",
+                    "@carrinho_id",
                     carrinhoId
                 );
 
                 insert.Parameters.AddWithValue(
-                    "@produtoId",
+                    "@produto_id",
                     produtoId
                 );
 
                 insert.Parameters.AddWithValue(
                     "@quantidade",
                     1
-                );
-
-                insert.Parameters.AddWithValue(
-                    "@preco",
-                    preco
                 );
 
                 insert.ExecuteNonQuery();
@@ -208,12 +200,14 @@ namespace EcommerceMVC.Controllers
                 connection.CreateCommand();
 
             totalCommand.CommandText = @"
-            SELECT SUM(quantidade * precoUnitario)
+            SELECT SUM(itens_carrinho.quantidade * produto.preco)
             FROM itens_carrinho
-            WHERE carrinhoId = @carrinhoId";
+            INNER JOIN produto
+            ON produto.id = itens_carrinho.produto_id
+            WHERE itens_carrinho.carrinho_id = @carrinho_id";
 
             totalCommand.Parameters.AddWithValue(
-                "@carrinhoId",
+                "@carrinho_id",
                 carrinhoId
             );
 
@@ -261,10 +255,10 @@ namespace EcommerceMVC.Controllers
                 produto.nome,
                 produto.imagem,
                 itens_carrinho.quantidade,
-                itens_carrinho.precoUnitario
+                produto.preco
             FROM itens_carrinho
             INNER JOIN produto
-            ON produto.id = itens_carrinho.produtoId";
+            ON produto.id = itens_carrinho.produto_id";
 
             var itens = new List<object>();
 
