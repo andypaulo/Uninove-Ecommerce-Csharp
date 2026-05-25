@@ -294,9 +294,9 @@ namespace EcommerceMVC.Controllers
 
             var itemCommand = connection.CreateCommand();
             itemCommand.CommandText = @"
-        SELECT id, carrinho_id, produto_id 
-        FROM itens_carrinho 
-        WHERE produto_id = @produto_id";
+                SELECT id, carrinho_id, produto_id 
+                FROM itens_carrinho 
+                WHERE produto_id = @produto_id";
             itemCommand.Parameters.AddWithValue("@produto_id", dto.ProdutoId);
 
             int itemId = 0;
@@ -329,14 +329,54 @@ namespace EcommerceMVC.Controllers
 
             var totalCommand = connection.CreateCommand();
             totalCommand.CommandText = @"
-        SELECT SUM(itens_carrinho.quantidade * produto.preco)
-        FROM itens_carrinho
-        INNER JOIN produto ON produto.id = itens_carrinho.produto_id
-        WHERE itens_carrinho.carrinho_id = @carrinho_id";
+                SELECT SUM(itens_carrinho.quantidade * produto.preco)
+                FROM itens_carrinho
+                INNER JOIN produto ON produto.id = itens_carrinho.produto_id
+                WHERE itens_carrinho.carrinho_id = @carrinho_id";
             totalCommand.Parameters.AddWithValue("@carrinho_id", carrinhoId);
 
             var totalResult = totalCommand.ExecuteScalar();
             decimal total = totalResult != DBNull.Value ? Convert.ToDecimal(totalResult) : 0;
+
+            var updateCarrinho = connection.CreateCommand();
+            updateCarrinho.CommandText = "UPDATE carrinho SET valorTotal = @total WHERE id = @id";
+            updateCarrinho.Parameters.AddWithValue("@total", total);
+            updateCarrinho.Parameters.AddWithValue("@id", carrinhoId);
+            updateCarrinho.ExecuteNonQuery();
+
+            return Ok(new { total });
+        }
+        [HttpPost]
+        public IActionResult Excluir([FromBody] ExcluirItemDTO? dto)
+        {
+            if (dto == null) return BadRequest("Corpo inválido.");
+
+            using var connection = new SqliteConnection(ConnectionString);
+            connection.Open();
+
+            var itemCommand = connection.CreateCommand();
+            itemCommand.CommandText = "SELECT carrinho_id FROM itens_carrinho WHERE produto_id = @produto_id LIMIT 1";
+            itemCommand.Parameters.AddWithValue("@produto_id", dto.ProdutoId);
+
+            var carrinhoResult = itemCommand.ExecuteScalar();
+            if (carrinhoResult == null) return NotFound("Item não encontrado no carrinho.");
+            int carrinhoId = Convert.ToInt32(carrinhoResult);
+
+            var deleteCommand = connection.CreateCommand();
+            deleteCommand.CommandText = "DELETE FROM itens_carrinho WHERE produto_id = @produto_id";
+            deleteCommand.Parameters.AddWithValue("@produto_id", dto.ProdutoId);
+            deleteCommand.ExecuteNonQuery();
+
+            var totalCommand = connection.CreateCommand();
+            totalCommand.CommandText = @"
+                SELECT SUM(itens_carrinho.quantidade * produto.preco)
+                FROM itens_carrinho
+                INNER JOIN produto ON produto.id = itens_carrinho.produto_id
+                WHERE itens_carrinho.carrinho_id = @carrinho_id";
+            totalCommand.Parameters.AddWithValue("@carrinho_id", carrinhoId);
+
+            var totalResult = totalCommand.ExecuteScalar();
+            decimal total = totalResult != DBNull.Value && totalResult != null ? Convert.ToDecimal(totalResult) : 0;
 
             var updateCarrinho = connection.CreateCommand();
             updateCarrinho.CommandText = "UPDATE carrinho SET valorTotal = @total WHERE id = @id";
@@ -357,5 +397,8 @@ namespace EcommerceMVC.Controllers
         public int ProdutoId { get; set; }
         public int NovaQuantidade { get; set; }
     }
-
+    public class ExcluirItemDTO
+    {
+        public int ProdutoId { get; set; }
+    }
 }

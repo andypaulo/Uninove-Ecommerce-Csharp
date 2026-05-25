@@ -245,29 +245,49 @@
         total +=
           item.preco * item.quantidade;
         cartItems.innerHTML += `
-        <div class="item-card">
-          <img src="${item.imagem}">
-          <div class="item-info">
-            <h2>${item.nome}</h2>
-            <div style="margin-bottom: 12px;">
-                <span style="color: #ccc;">Qtd:</span>
-                <input
-                    type="number"
-                    class="quantidade-input"
-                    value="${item.quantidade}" 
-                    min="1" 
-                    data-produto-id="${item.produtoId}"
-                    style="width: 50px; background: #2a2a2a; color: white; border: 1px solid #404040; border-radius: 4px; padding: 2px;"
-                />
+        <div class="item-card" style="display: flex; align-items: center; justify-content: space-between; gap: 20px; width: 100%;">
+
+          <div style="display: flex; align-items: center; gap: 20px;">
+            <img src="${item.imagem}" style="width: 120px; height: 180px; object-fit: cover; border-radius: 8px;">
+    
+            <div class="item-info">
+              <h2 style="margin-bottom: 10px; font-size: 22px;">${item.nome}</h2>
+              <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                  <span style="color: #ccc; font-size: 15px;">Qtd:</span>
+                  <input
+                      type="number"
+                      class="quantidade-input"
+                      value="${item.quantidade}" 
+                      min="1" 
+                      data-produto-id="${item.produtoId}"
+                      style="width: 50px; background: #2a2a2a; color: white; border: 1px solid #404040; border-radius: 4px; padding: 2px; text-align: center;"
+                  />
+              </div>
+              <h3 style="font-size: 18px; font-weight: 700;">R$ ${item.preco.toFixed(2)}</h3>
             </div>
-            <h3>R$ ${item.preco.toFixed(2)}</h3>
           </div>
+
+          <button 
+              type="button" 
+              class="btn-excluir" 
+              data-produto-id="${item.produtoId}"
+              style="background: transparent; color: #ff4d4d; border: none; cursor: pointer; padding: 20px; display: flex; align-items: center; justify-content: center; transition: transform 0.2s, color 0.2s;"
+              onmouseover="this.style.color='#ff1a1a'; this.style.transform='scale(1.1)';"
+              onmouseout="this.style.color='#ff4d4d'; this.style.transform='scale(1)';"
+          >
+              <svg xmlns="http://www.w3.org/2000/svg" width="28px" height="28px" viewBox="0 0 24 24" style="display: block;">
+                  <title>trash</title>
+                  <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16m-10 4v6m4-6v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/>
+              </svg>
+          </button>
+
         </div>
         `;
       });
         summaryValue.innerText =
             `R$ ${total.toFixed(2)}`;
-            configurarEventosQuantidade();
+        configurarEventosQuantidade();
+        configurarEventosExcluir();
     }
       function configurarEventosQuantidade() {
           document.querySelectorAll('.quantidade-input').forEach(input => {
@@ -292,6 +312,34 @@
                   } else {
                       alert('Erro ao atualizar (Verifique o estoque).');
                       carregarCarrinho();
+                  }
+              });
+          });
+      }
+      function configurarEventosExcluir() {
+          document.querySelectorAll('.btn-excluir').forEach(botao => {
+              botao.addEventListener('click', async function () {
+                  const pId = parseInt(this.getAttribute('data-produto-id'));
+
+                  if (!confirm('Tem certeza que deseja remover este item do carrinho?')) {
+                      return;
+                  }
+
+                  try {
+                      const response = await fetch('/Carrinho/Excluir', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ ProdutoId: pId })
+                      });
+
+                      if (response.ok) {
+                          carregarCarrinho();
+                      } else {
+                          alert('Erro ao tentar excluir o item do carrinho.');
+                      }
+                  } catch (error) {
+                      console.error(error);
+                      alert('Erro na comunicação com o servidor.');
                   }
               });
           });
