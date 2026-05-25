@@ -8,7 +8,7 @@ namespace EcommerceMVC.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index(string? categoria, int pagina = 1)
+        public IActionResult Index(string? categoria, string? pesquisa, int pagina = 1)
         {
             var listaProdutos = new List<Produto>();
 
@@ -25,29 +25,28 @@ namespace EcommerceMVC.Controllers
                     connection.Open();
 
                     var command = connection.CreateCommand();
+                    string query = @"
+                        SELECT id, nome, descricao, preco, estoque, imagem, categoria
+                        FROM Produto
+                        WHERE 1=1";
 
                     if (!string.IsNullOrEmpty(categoria))
                     {
-                        command.CommandText = @"
-                         SELECT id, nome, descricao, preco, estoque, imagem, categoria
-                         FROM Produto
-                         WHERE categoria = @categoria
-                         LIMIT @limite
-                         OFFSET @offset";
-
+                        query += " AND categoria = @categoria";
                         command.Parameters.AddWithValue("@categoria", categoria);
                     }
-                    else
+
+                    if (!string.IsNullOrEmpty(pesquisa))
                     {
-                        command.CommandText = @"
-                         SELECT id, nome, descricao, preco, estoque, imagem, categoria
-                         FROM Produto
-                         LIMIT @limite
-                         OFFSET @offset";
+                        query += " AND nome LIKE @pesquisa";
+                        command.Parameters.AddWithValue("@pesquisa", "%" + pesquisa + "%");
                     }
 
+                    query += " LIMIT @limite OFFSET @offset";
                     command.Parameters.AddWithValue("@limite", limite);
                     command.Parameters.AddWithValue("@offset", offset);
+
+                    command.CommandText = query;
 
                     using (var reader = command.ExecuteReader())
                     {
@@ -67,35 +66,32 @@ namespace EcommerceMVC.Controllers
                     }
 
                     var totalCommand = connection.CreateCommand();
+                    string countQuery = "SELECT COUNT(*) FROM Produto WHERE 1=1";
 
                     if (!string.IsNullOrEmpty(categoria))
                     {
-                        totalCommand.CommandText = @"
-                        SELECT COUNT(*)
-                        FROM Produto
-                        WHERE categoria = @categoria";
-
+                        countQuery += " AND categoria = @categoria";
                         totalCommand.Parameters.AddWithValue("@categoria", categoria);
                     }
-                    else
+
+                    if (!string.IsNullOrEmpty(pesquisa))
                     {
-                        totalCommand.CommandText =
-                            "SELECT COUNT(*) FROM Produto";
+                        countQuery += " AND nome LIKE @pesquisa";
+                        totalCommand.Parameters.AddWithValue("@pesquisa", "%" + pesquisa + "%");
                     }
 
-                    int totalProdutos =
-                        Convert.ToInt32(
-                            totalCommand.ExecuteScalar()
-                        );
+                    totalCommand.CommandText = countQuery;
+                    int totalProdutos = Convert.ToInt32(totalCommand.ExecuteScalar());
 
-                    int totalPaginas =
-                        (int)Math.Ceiling(
-                            (double)totalProdutos / limite
-                        );
+                    // Garante ao menos 1 página se o resultado for vazio
+                    int totalPaginas = (int)Math.Ceiling((double)totalProdutos / limite);
+                    if (totalPaginas == 0) totalPaginas = 1;
 
+                    // Passa os estados necessários para manter os filtros vivos na View
                     ViewBag.PaginaAtual = pagina;
                     ViewBag.TotalPaginas = totalPaginas;
                     ViewBag.Categoria = categoria;
+                    ViewBag.Pesquisa = pesquisa;
                 }
 
                 return View(listaProdutos);

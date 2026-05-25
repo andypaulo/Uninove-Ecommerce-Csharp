@@ -56,7 +56,10 @@
 <body>
 
     <header class="custom-header">
-        <input type="text" placeholder="🔍 Buscar mangá...">
+        <form method="get" action="@Url.Action("Index", "Home")">
+            <input type="hidden" name="categoria" value="@Context.Request.Query["categoria"]" />
+            <input type="text" name="pesquisa" placeholder="Buscar mangá..." value="@Context.Request.Query["pesquisa"]">
+        </form>
     </header>
 
     <nav class="custom-nav">
