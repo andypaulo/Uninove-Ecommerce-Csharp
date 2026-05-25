@@ -232,54 +232,70 @@
     {
       const response =
         await fetch('/Carrinho/ObterItens');
-
       const itens =
         await response.json();
-
       const cartItems =
         document.querySelector('.cart-items');
-
       const summaryValue =
-        document.querySelector('.summary-value');
-
+            document.querySelector('.summary-value');
+      cartItems.innerHTML = '<h1>Meu carrinho</h1>';
       let total = 0;
-
       itens.forEach(item =>
       {
         total +=
           item.preco * item.quantidade;
-
         cartItems.innerHTML += `
-        
         <div class="item-card">
-
           <img src="${item.imagem}">
-
           <div class="item-info">
-
-            <h2>
-              ${item.nome}
-            </h2>
-
-            <p>
-              Quantidade:
-              ${item.quantidade}
-            </p>
-
-            <h3>
-              R$ ${item.preco.toFixed(2)}
-            </h3>
-
+            <h2>${item.nome}</h2>
+            <div style="margin-bottom: 12px;">
+                <span style="color: #ccc;">Qtd:</span>
+                <input
+                    type="number"
+                    class="quantidade-input"
+                    value="${item.quantidade}" 
+                    min="1" 
+                    data-produto-id="${item.produtoId}"
+                    style="width: 50px; background: #2a2a2a; color: white; border: 1px solid #404040; border-radius: 4px; padding: 2px;"
+                />
+            </div>
+            <h3>R$ ${item.preco.toFixed(2)}</h3>
           </div>
-
         </div>
-
         `;
       });
-
-      summaryValue.innerText =
-        `R$ ${total.toFixed(2)}`;
+        summaryValue.innerText =
+            `R$ ${total.toFixed(2)}`;
+            configurarEventosQuantidade();
     }
+      function configurarEventosQuantidade() {
+          document.querySelectorAll('.quantidade-input').forEach(input => {
+              input.addEventListener('change', async function () {
+                  const pId = parseInt(this.getAttribute('data-produto-id'));
+                  const novaQtd = parseInt(this.value);
+
+                  if (novaQtd < 1) {
+                      this.value = 1;
+                      return;
+                  }
+
+                  const response = await fetch('/Carrinho/Alterar', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ ProdutoId: pId, NovaQuantidade: novaQtd })
+                  });
+
+                  if (response.ok) {
+                      const dados = await response.json();
+                      document.querySelector('.summary-value').innerText = `R$ ${dados.total.toFixed(2)}`;
+                  } else {
+                      alert('Erro ao atualizar (Verifique o estoque).');
+                      carregarCarrinho();
+                  }
+              });
+          });
+      }
 
     carregarCarrinho();
 

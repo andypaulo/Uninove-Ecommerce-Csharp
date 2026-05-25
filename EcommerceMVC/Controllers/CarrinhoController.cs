@@ -252,6 +252,7 @@ namespace EcommerceMVC.Controllers
 
             command.CommandText = @"
             SELECT
+                produto.id,
                 produto.nome,
                 produto.imagem,
                 itens_carrinho.quantidade,
@@ -268,26 +269,82 @@ namespace EcommerceMVC.Controllers
             while (reader.Read())
             {
                 var imagemBanco =
-                    reader.GetString(1);
+                    reader.GetString(2);
 
                 itens.Add(new
                 {
-                    nome = reader.GetString(0),
-
-                    imagem =
-                        imagemBanco.StartsWith("http")
-                        ? imagemBanco
-                        : "/images/" + imagemBanco,
-
-                    quantidade =
-                        reader.GetInt32(2),
-
-                    preco =
-                        reader.GetDecimal(3)
+                    produtoId = reader.GetInt32(0),
+                    nome = reader.GetString(1),
+                    imagem = imagemBanco.StartsWith("http") ? imagemBanco: "/images/" + imagemBanco,
+                    quantidade = reader.GetInt32(3),
+                    preco = reader.GetDecimal(4)
                 });
             }
 
             return Json(itens);
+        }
+        [HttpPost]
+        public IActionResult Alterar([FromBody] AlterarQuantidadeDTO? dto)
+        {
+            if (dto == null) return BadRequest("Corpo inválido.");
+            if (dto.NovaQuantidade < 1) return BadRequest("Quantidade mínima é 1.");
+
+            using var connection = new SqliteConnection(ConnectionString);
+            connection.Open();
+
+            var itemCommand = connection.CreateCommand();
+            itemCommand.CommandText = @"
+        SELECT id, carrinho_id, produto_id 
+        FROM itens_carrinho 
+        WHERE produto_id = @produto_id";
+            itemCommand.Parameters.AddWithValue("@produto_id", dto.ProdutoId);
+
+            int itemId = 0;
+            int carrinhoId = 0;
+
+            using (var reader = itemCommand.ExecuteReader())
+            {
+                if (!reader.Read()) return NotFound("Item não encontrado no carrinho.");
+                itemId = reader.GetInt32(0);
+                carrinhoId = reader.GetInt32(1);
+            }
+
+            var estoqueCommand = connection.CreateCommand();
+            estoqueCommand.CommandText = "SELECT estoque FROM produto WHERE id = @id"; 
+            estoqueCommand.Parameters.AddWithValue("@id", dto.ProdutoId);
+            var estoqueResult = estoqueCommand.ExecuteScalar();
+
+            if (estoqueResult != null && estoqueResult != DBNull.Value)
+            {
+                int estoque = Convert.ToInt32(estoqueResult);
+                if (dto.NovaQuantidade > estoque)
+                    return BadRequest($"Estoque insuficiente. Disponível: {estoque}.");
+            }
+
+            var update = connection.CreateCommand();
+            update.CommandText = "UPDATE itens_carrinho SET quantidade = @quantidade WHERE id = @id";
+            update.Parameters.AddWithValue("@quantidade", dto.NovaQuantidade);
+            update.Parameters.AddWithValue("@id", itemId);
+            update.ExecuteNonQuery();
+
+            var totalCommand = connection.CreateCommand();
+            totalCommand.CommandText = @"
+        SELECT SUM(itens_carrinho.quantidade * produto.preco)
+        FROM itens_carrinho
+        INNER JOIN produto ON produto.id = itens_carrinho.produto_id
+        WHERE itens_carrinho.carrinho_id = @carrinho_id";
+            totalCommand.Parameters.AddWithValue("@carrinho_id", carrinhoId);
+
+            var totalResult = totalCommand.ExecuteScalar();
+            decimal total = totalResult != DBNull.Value ? Convert.ToDecimal(totalResult) : 0;
+
+            var updateCarrinho = connection.CreateCommand();
+            updateCarrinho.CommandText = "UPDATE carrinho SET valorTotal = @total WHERE id = @id";
+            updateCarrinho.Parameters.AddWithValue("@total", total);
+            updateCarrinho.Parameters.AddWithValue("@id", carrinhoId);
+            updateCarrinho.ExecuteNonQuery();
+
+            return Ok(new { total });
         }
     }
 
@@ -295,4 +352,10 @@ namespace EcommerceMVC.Controllers
     {
         public int ProdutoId { get; set; }
     }
+    public class AlterarQuantidadeDTO
+    {
+        public int ProdutoId { get; set; }
+        public int NovaQuantidade { get; set; }
+    }
+
 }
