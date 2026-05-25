@@ -310,43 +310,34 @@
 
         @if (ViewBag.Relacionados != null)
         {
-            @foreach (var item in ViewBag.Relacionados)
-            {
-                <div class="col-md-3 mb-3">
+            <div class="row">
+                @foreach (var item in ViewBag.Relacionados as List<Produto>)
+                {
+                    <div class="col-md-3 mb-3">
+                        <a asp-action="Details" asp-route-id="@item.Id" style="text-decoration: none; color: inherit; display: block;">
 
-                    <div class="card">
+                            <div class="card card-flutuante">
+                                @{
+                                    var imgRel = string.IsNullOrEmpty(item.Imagem) ? "sem-foto.jpg" : item.Imagem;
+                                    var srcRel = imgRel.StartsWith("http") ? imgRel : Url.Content("~/images/" + imgRel);
+                                }
 
-                        @{
-                            var imgRel =
-                                string.IsNullOrEmpty(item.Imagem)
-                                ? "sem-foto.jpg"
-                                : item.Imagem;
+                                <img src="@srcRel" alt="@item.Nome" class="card-img-top" />
 
-                            var srcRel =
-                                imgRel.StartsWith("http")
-                                ? imgRel
-                                : Url.Content("~/images/" + imgRel);
-                        }
+                                <div class="card-body">
+                                    <p class="card-text" style="font-weight: bold; margin-bottom: 5px;">
+                                        @item.Nome
+                                    </p>
+                                    <p class="card-preco" style="color: #28a745; font-weight: bold; margin: 0;">
+                                        R$ @item.Preco.ToString("N2")
+                                    </p>
+                                </div>
+                            </div>
 
-                        <img src="@srcRel"
-                             alt="@item.Nome" />
-
-                        <div class="card-body">
-
-                            <p class="card-text">
-                                @item.Nome
-                            </p>
-
-                            <p class="card-preco">
-                                R$ @item.Preco.ToString("N2")
-                            </p>
-
-                        </div>
-
+                        </a>
                     </div>
-
-                </div>
-            }
+                }
+            </div>
         }
 
     </div>

@@ -41,6 +41,7 @@ namespace EcommerceMVC.Controllers
                         query += " AND nome LIKE @pesquisa";
                         command.Parameters.AddWithValue("@pesquisa", "%" + pesquisa + "%");
                     }
+                    query += " ORDER BY CASE WHEN estoque = 0 THEN 1 ELSE 0 END, id ASC";
 
                     query += " LIMIT @limite OFFSET @offset";
                     command.Parameters.AddWithValue("@limite", limite);
@@ -119,7 +120,7 @@ namespace EcommerceMVC.Controllers
                 {
                     connection.Open();
                     var command = connection.CreateCommand();
-                    command.CommandText = "SELECT id, nome, descricao, preco, estoque, imagem FROM Produto WHERE id = $id";
+                    command.CommandText = "SELECT id, nome, descricao, preco, estoque, imagem, categoria FROM Produto WHERE id = $id";
                     command.Parameters.AddWithValue("$id", id);
 
                     using (var reader = command.ExecuteReader())
@@ -133,9 +134,42 @@ namespace EcommerceMVC.Controllers
                                 Descricao = reader.IsDBNull(2) ? "" : reader.GetString(2),
                                 Preco = reader.GetDecimal(3),
                                 Estoque = reader.GetInt32(4),
-                                Imagem = reader.IsDBNull(5) ? "sem-foto.jpg" : reader.GetString(5)
+                                Imagem = reader.IsDBNull(5) ? "sem-foto.jpg" : reader.GetString(5),
+                                Categoria = reader.IsDBNull(6) ? "" : reader.GetString(6) 
                             };
                         }
+                    }
+
+                    if (produto != null)
+                    {
+                        var relacionados = new List<Produto>();
+                        var relCommand = connection.CreateCommand();
+
+                        relCommand.CommandText = @"
+                            SELECT id, nome, preco, imagem, categoria
+                            FROM Produto
+                            WHERE categoria = @categoria AND id != @id
+                            ORDER BY RANDOM()
+                            LIMIT 4";
+
+                        relCommand.Parameters.AddWithValue("@categoria", produto.Categoria);
+                        relCommand.Parameters.AddWithValue("@id", produto.Id);
+
+                        using (var relReader = relCommand.ExecuteReader())
+                        {
+                            while (relReader.Read())
+                            {
+                                relacionados.Add(new Produto
+                                {
+                                    Id = relReader.GetInt32(0),
+                                    Nome = relReader.GetString(1),
+                                    Preco = relReader.GetDecimal(2),
+                                    Imagem = relReader.IsDBNull(3) ? "sem-foto.jpg" : relReader.GetString(3),
+                                    Categoria = relReader.IsDBNull(4) ? "" : relReader.GetString(4)
+                                });
+                            }
+                        }
+                        ViewBag.Relacionados = relacionados;
                     }
                 }
             }
@@ -170,7 +204,7 @@ namespace EcommerceMVC.Controllers
                 {
                     connection.Open();
                     var command = connection.CreateCommand();
-                    command.CommandText = "SELECT id, nome, descricao, preco, estoque, imagem FROM Produto";
+                    command.CommandText = "SELECT id, nome, descricao, preco, estoque, imagem, categoria FROM Produto";
 
                     using (var reader = command.ExecuteReader())
                     {
@@ -183,7 +217,8 @@ namespace EcommerceMVC.Controllers
                                 Descricao = reader.IsDBNull(2) ? "" : reader.GetString(2),
                                 Preco = reader.GetDecimal(3),
                                 Estoque = reader.GetInt32(4),
-                                Imagem = reader.IsDBNull(5) ? "sem-foto.jpg" : reader.GetString(5)
+                                Imagem = reader.IsDBNull(5) ? "sem-foto.jpg" : reader.GetString(5),
+                                Categoria = reader.IsDBNull(6) ? "" : reader.GetString(6)
                             });
                         }
                     }
