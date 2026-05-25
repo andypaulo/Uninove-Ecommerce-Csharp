@@ -83,11 +83,9 @@ namespace EcommerceMVC.Controllers
                     totalCommand.CommandText = countQuery;
                     int totalProdutos = Convert.ToInt32(totalCommand.ExecuteScalar());
 
-                    // Garante ao menos 1 página se o resultado for vazio
                     int totalPaginas = (int)Math.Ceiling((double)totalProdutos / limite);
                     if (totalPaginas == 0) totalPaginas = 1;
 
-                    // Passa os estados necessários para manter os filtros vivos na View
                     ViewBag.PaginaAtual = pagina;
                     ViewBag.TotalPaginas = totalPaginas;
                     ViewBag.Categoria = categoria;
@@ -198,6 +196,36 @@ namespace EcommerceMVC.Controllers
                 ViewBag.DbState = "Erro: " + ex.Message;
                 return View(new List<Produto>());
             }
+        }
+        [HttpGet]
+        public IActionResult SugestoesPesquisa(string pesquisa)
+        {
+            if (string.IsNullOrEmpty(pesquisa) || pesquisa.Length < 2)
+                return Json(new List<object>()); 
+
+            var sugestoes = new List<object>();
+            string connectionString = "Data Source=database/database.db;";
+
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = "SELECT id, nome FROM Produto WHERE nome LIKE @pesquisa LIMIT 5";
+                command.Parameters.AddWithValue("@pesquisa", "%" + pesquisa + "%");
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        sugestoes.Add(new
+                        {
+                            id = reader.GetInt32(0),
+                            nome = reader.GetString(1)
+                        });
+                    }
+                }
+            }
+            return Json(sugestoes);
         }
     }
 }
