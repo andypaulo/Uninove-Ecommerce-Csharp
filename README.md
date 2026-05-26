@@ -1,4 +1,4 @@
-# Mangá e Lámen — E-Commerce
+# Mangá e Lamen — E-Commerce
 
 > Sistema de e-commerce desenvolvido para a disciplina de **Projeto e Modelagem de Sistemas de Software** — UNINOVE 5º Semestre.
 
