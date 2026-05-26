@@ -97,21 +97,31 @@ https://localhost:5001
 ```
 EcommerceMVC/
 ├── Controllers/
-│   └── HomeController.cs       # Lógica das páginas e ações
+│   ├── HomeController.cs        # Lógica de navegação geral (Index, Detalhes, Pesquisa)
+│   ├── ProdutoController.cs     # Painel de controle e operações CRUD de produtos
+│   └── CarrinhoController.cs    # Lógica de persistência e validação de estoque do carrinho
 ├── Models/
-│   └── Produto.cs              # Modelo de dados do produto
+│   └── Produto.cs               # Modelo de dados do produto (SQLite mapping)
 ├── Views/
 │   ├── Home/
-│   │   ├── Index.cshtml        # Página inicial
-│   │   ├── Details.cshtml      # Detalhes do produto
-│   │   ├── Gerenciamento.cshtml# Painel administrativo
-│   │   └── Carrinho.cshtml     # Carrinho de compras
+│   │   ├── Index.cshtml         # Vitrine principal de produtos e filtros
+│   │   ├── Details.cshtml       # Detalhes específicos de um mangá
+│   │   └── Contato.cshtml       # Página de contato do sistema
+│   ├── Produto/
+│   │   ├── Gerenciamento.cshtml # Painel administrativo (lista para o admin)
+│   │   ├── Create.cshtml        # Tela de cadastro de novos produtos
+│   │   ├── Editar.cshtml        # Tela de edição de dados/estoque
+│   │   └── Delete.cshtml        # Tela de confirmação de exclusão
 │   └── Shared/
-│       └── _Layout.cshtml      # Layout base
+│       └── _Layout.cshtml       # Layout base (Navbar com Poppins, header e footer)
 ├── database/
-│   └── database.db             # Banco de dados SQLite
+│   └── database.db              # Banco de dados SQLite local
 ├── wwwroot/
-│   └── img/                    # Imagens dos produtos
+│   ├── carrinho.html            # Interface SPA do carrinho de compras (consumindo a API)
+│   ├── css/
+│   │   └── site.css             # Estilizações customizadas globais
+│   ├── images/                  # Imagens de capa dos mangás e banners
+│   └── lib/                     # Bibliotecas client-side (Bootstrap, jQuery)
 └── README.md
 ```
 
