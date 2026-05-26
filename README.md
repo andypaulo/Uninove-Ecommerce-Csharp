@@ -6,7 +6,7 @@
 
 ## 📖 Sobre o Projeto
 
-O **Mangá e Lámen** é uma plataforma de vendas online voltada para fãs de leitura, com foco em mangás e livros em geral. O sistema foi desenvolvido pela equipe **Code Nexus** como projeto integrador do semestre, aplicando na prática os conhecimentos das disciplinas de Métodos Ágeis, Engenharia de Software, Processos de Negócio, IHC e Técnicas de Programação.
+O **Mangá e Lamen** é uma plataforma de vendas online voltada para fãs de leitura, com foco em mangás e livros em geral. O sistema foi desenvolvido pela equipe **Code Nexus** como projeto integrador do semestre, aplicando na prática os conhecimentos das disciplinas de Métodos Ágeis, Engenharia de Software, Processos de Negócio, IHC e Técnicas de Programação.
 
 A plataforma permite que clientes naveguem pelo catálogo, visualizem detalhes dos produtos e gerenciem seu carrinho de compras. Do lado administrativo, oferece um painel completo para gerenciamento do acervo da loja.
 
@@ -15,16 +15,16 @@ A plataforma permite que clientes naveguem pelo catálogo, visualizem detalhes d
 ## 🚀 Funcionalidades
 
 ### Cliente
-- Visualizar página inicial com produtos em destaque
+- Visualizar página inicial com informações de contato da loja
 - Navegar pela listagem completa de produtos
-- Ver detalhes de cada produto (nome, descrição, preço, estoque)
+- Ver detalhes de cada produto (nome, descrição, preço, estoque e categoria)
 - Adicionar produtos ao carrinho
 - Alterar quantidade de itens no carrinho
 - Remover itens do carrinho
 - Finalizar compra
 
 ### Administrador
-- Cadastrar novos produtos (nome, descrição, preço, estoque, imagem)
+- Cadastrar novos produtos (nome, descrição, preço, estoque, imagem e categoria)
 - Editar produtos já cadastrados
 - Excluir produtos do sistema
 - Visualizar todos os produtos no painel de gerenciamento
@@ -35,7 +35,7 @@ A plataforma permite que clientes naveguem pelo catálogo, visualizem detalhes d
 
 | Tela | Descrição |
 |---|---|
-| Página Inicial | Apresenta os produtos em destaque |
+| Página Inicial | Apresenta um pouco sobre a loja e as formas de contato |
 | Listagem de Produtos | Exibe todos os produtos disponíveis |
 | Detalhes do Produto | Informações completas do produto selecionado |
 | Gerenciamento de Produtos | Painel administrativo de CRUD |
@@ -144,4 +144,4 @@ EcommerceMVC/
 
 ## 🎬 Vídeo de Apresentação
 
-📺 [Assistir no YouTube](https://youtube.com/seu-link-aqui)
+📺 [Assistir no YouTube](https://youtu.be/NzVUihCsta4)
