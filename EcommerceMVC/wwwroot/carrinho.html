@@ -20,13 +20,7 @@
     {
       background-color: #121212;
       color: #ffffff;
-      font-family: -apple-system,
-                   BlinkMacSystemFont,
-                   'Segoe UI',
-                   Inter,
-                   Helvetica,
-                   Arial,
-                   sans-serif;
+      font-family: 'Poppins', sans-serif;
 
       min-height: 100vh;
       padding: 48px 56px;
@@ -212,11 +206,11 @@
 
         <hr class="summary-divider">
 
-        <button
-          class="btn-checkout"
-          type="button">
+        <button id="btnFinalizar"
+                class="btn-checkout"
+                type="button">
 
-          Finalizar compra
+            Finalizar compra
 
         </button>
 
@@ -345,7 +339,31 @@
           });
       }
 
-    carregarCarrinho();
+      carregarCarrinho();
+      document.getElementById('btnFinalizar').addEventListener('click', async function () {
+          if (!confirm('Deseja realmente finalizar a sua compra?')) {
+              return;
+          }
+
+          try {
+              const response = await fetch('/Carrinho/FinalizarCompra', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' }
+              });
+
+              if (response.ok) {
+                  const resultado = await response.json();
+                  alert('Compra efetuada com sucesso! ' + resultado.mensagem);
+                  window.location.reload();
+              } else {
+                  const erroTexto = await response.text();
+                  alert('Atenção: ' + erroTexto);
+              }
+          } catch (error) {
+              console.error(error);
+              alert('Erro ao processar comunicação com o servidor.');
+          }
+      });
 
   </script>
 

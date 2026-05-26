@@ -15,7 +15,7 @@ namespace EcommerceMVC.Controllers
             SQLitePCL.Batteries_V2.Init();
             string connectionString = "Data Source=database/database.db;";
 
-            int limite = 21;
+            int limite = 12;
             int offset = (pagina - 1) * limite;
 
             try
@@ -135,9 +135,15 @@ namespace EcommerceMVC.Controllers
                                 Preco = reader.GetDecimal(3),
                                 Estoque = reader.GetInt32(4),
                                 Imagem = reader.IsDBNull(5) ? "sem-foto.jpg" : reader.GetString(5),
-                                Categoria = reader.IsDBNull(6) ? "" : reader.GetString(6) 
+                                Categoria = reader.IsDBNull(6) ? "" : reader.GetString(6)
                             };
                         }
+                    }
+
+                    if (produto != null && produto.Estoque <= 0)
+                    {
+                        TempData["AvisoEstoque"] = $"O mangá '{produto.Nome}' está indisponível no momento.";
+                        return RedirectToAction("Index");
                     }
 
                     if (produto != null)
@@ -236,7 +242,7 @@ namespace EcommerceMVC.Controllers
         public IActionResult SugestoesPesquisa(string pesquisa)
         {
             if (string.IsNullOrEmpty(pesquisa) || pesquisa.Length < 2)
-                return Json(new List<object>()); 
+                return Json(new List<object>());
 
             var sugestoes = new List<object>();
             string connectionString = "Data Source=database/database.db;";
@@ -261,6 +267,10 @@ namespace EcommerceMVC.Controllers
                 }
             }
             return Json(sugestoes);
+        }
+        public IActionResult Contato()
+        {
+            return View();
         }
     }
 }

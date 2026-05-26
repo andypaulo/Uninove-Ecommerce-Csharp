@@ -8,10 +8,14 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EcommerceMVC.styles.css" asp-append-version="true" />
+    <link rel="icon" type="image/x-icon" href="~/images/manga&lamenlogo.webp" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <style>
-        body {
+        body, input, button, select, textarea {
             margin: 0;
-            font-family: Arial;
+            font-family: Poppins, sans-serif;
             background-color: #d3d3d3;
             padding-bottom: 60px;
         }
@@ -32,6 +36,7 @@
         .custom-nav {
             background-color: #222;
             padding: 10px;
+            gap: 20px;
             display: flex;
             justify-content: space-around;
         }
@@ -39,8 +44,24 @@
             .custom-nav a {
                 color: white;
                 text-decoration: none;
-                font-size: 14px;
+                font-size: 16px;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px; 
+                transition: 0.2s;
             }
+
+        .custom-nav a:hover {
+            color: #d3d3d3;
+        }
+
+        .custom-nav a img,
+        .custom-nav a svg {
+            width: 16px !important;
+            height: 16px !important;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+        }
 
         .custom-footer {
             background-color: #eee;
@@ -50,6 +71,12 @@
             position: fixed;
             bottom: 0;
             width: 100%;
+            opacity: 82%;
+        }
+
+        .custom-footer p {
+            margin: 0;
+            padding: 0;
         }
     </style>
 </head>
@@ -75,23 +102,39 @@
     </header>
 
     <nav class="custom-nav">
-        <a asp-controller="Home" asp-action="Index">Home</a>
-        <a href="#">Mangás</a>
-        <a href="#">Ofertas</a>
-        <a href="#">Contato</a>
+        <a asp-controller="Home" asp-action="Contato">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M 12 2.0996094 L 1 12 L 4 12 L 4 21 L 11 21 L 11 15 L 13 15 L 13 21 L 20 21 L 20 12 L 23 12 L 12 2.0996094 z M 12 4.7910156 L 18 10.191406 L 18 11 L 18 19 L 15 19 L 15 13 L 9 13 L 9 19 L 6 19 L 6 10.191406 L 12 4.7910156 z"></path>
+            </svg>
+            Home
+        </a>
+
+        <a asp-controller="Home" asp-action="Index">
+            <img width="16" height="16" src="https://img.icons8.com/windows/32/book-stack.png" alt="book-stack" />
+            Mangá
+        </a>
+
+        <a href="/carrinho.html">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+                <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
+            </svg>
+            Carrinho
+        </a>
+
+        <a asp-controller="Produto" asp-action="Gerenciamento">
+            <img width="16" height="16" src="https://img.icons8.com/ios/50/user--v1.png" alt="user--v1" />
+            Admin
+        </a>
     </nav>
 
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="container-fluid p-0">
+        <main role="main" class="pb-0">
             @RenderBody()
         </main>
     </div>
 
     <footer class="custom-footer">
-        <span>🏠</span>
-        <span>👤</span>
-        <span>🛒</span>
-        <span>☰</span>
+        <p>Todos os direitos Reservados © - Mangá & Lamen </p>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
