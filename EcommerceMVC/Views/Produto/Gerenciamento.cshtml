@@ -2,46 +2,84 @@
 
 @{
     ViewData["Title"] = "Painel de Gerenciamento";
+    <style>
+        .gerenciamento-card {
+            overflow: hidden;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+
+            .gerenciamento-card .card-img-top {
+                width: 100%;
+                object-fit: contain;
+                background: #fff;
+            }
+
+            .gerenciamento-card .card-body {
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+            }
+
+            .gerenciamento-card .acoes-card {
+                margin-top: auto;
+            }
+    </style>
 }
 
-<h2>Painel de Gerenciamento</h2>
 
-@if (TempData["Sucesso"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["Sucesso"]
+<div class="container py-4">
+    <h2 class="fw-bold mt-2">Painel de Gerenciamento</h2>
+    <div class="mb-4 mt-4 fw-bold">
+        <a asp-action="Create" class="btn btn-success">Cadastrar Novo Produto</a>
     </div>
-}
 
-@if (TempData["ErroExclusao"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["ErroExclusao"]
-    </div>
-}
-
-<div class="row">
-    @foreach (var item in Model)
+    @if (TempData["Sucesso"] != null)
     {
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <img src="~/images/@item.Imagem" class="card-img-top" alt="@item.Nome"
-                     onerror="this.src='/images/sem-foto.jpg'">
-                <div class="card-body">
-                    <h5 class="card-title">@item.Nome</h5>
-                    <p class="card-text">Estoque: <strong>@item.Estoque</strong></p>
-                    <p class="card-text">Preço: @item.Preco.ToString("C")</p>
+        <div class="alert alert-success">
+            @TempData["Sucesso"]
+        </div>
+    }
 
-                    <div class="d-grid gap-2">
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Deletar Produto</a>
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Editar</a>
+    @if (TempData["ErroExclusao"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErroExclusao"]
+        </div>
+    }
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 gerenciamento-card">
+                    <img src="@(string.IsNullOrEmpty(item.Imagem)
+                                                     ? Url.Content("~/images/sem-foto.jpg")
+                                                     : (item.Imagem.StartsWith("http")
+                                                         ? item.Imagem
+                                                         : Url.Content("~/images/" + item.Imagem)))"
+                         class="card-img-top"
+                         alt="@item.Nome">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Nome</h5>
+                        <p class="card-text">Estoque: <strong>@item.Estoque</strong></p>
+                        <p class="card-text">Preço: @item.Preco.ToString("C")</p>
+
+                        <div class="d-grid gap-2 acoes-card">
+                            <a asp-controller="Produto"
+                               asp-action="Editar"
+                               asp-route-id="@item.Id"
+                               class="btn btn-warning w-100 mt-2">
+
+                                Editar
+
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Deletar Produto</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    }
-</div>
-
-<div class="mt-4">
-    <a asp-action="Create" class="btn btn-success">Cadastrar Novo Produto</a>
+        }
+    </div>
 </div>

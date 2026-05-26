@@ -1,0 +1,271 @@
+﻿@{
+    ViewData["Title"] = "Sobre Nós";
+}
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        overflow-x: hidden;
+        background: #d3d3d3;
+    }
+
+    .sobre-container {
+        width: 100%;
+    }
+
+    .hero {
+        background: linear-gradient(135deg, #111, #222);
+        padding: 80px 10%;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        width: 100vw;
+        min-height: 60vh;
+    }
+
+    .hero-text {
+        flex: 1;
+        min-width: 300px;
+    }
+
+        .hero-text h1 {
+            font-size: 58px;
+            margin-bottom: 15px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            line-height: 1.1;
+        }
+
+        .hero-text span {
+            color: #ff69b4;
+        }
+
+        .hero-text h2 {
+            font-size: 22px;
+            font-weight: 400;
+            margin-bottom: 30px;
+            color: #d7d7d7;
+            line-height: 1.5;
+        }
+
+        .hero-text p {
+            font-size: 17px;
+            line-height: 1.9;
+            color: #cfcfcf;
+            max-width: 700px;
+        }
+
+    .hero-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 60px;
+        flex-wrap: nowrap;
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-image {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 320px;
+    }
+
+    .hero-image img {
+        width: 100%;
+        max-width: 560px;
+        border-radius: 28px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+        transition: 0.3s ease;
+    }
+
+    .hero-image img:hover {
+        transform: scale(1.02);
+    }
+
+
+    .sobre-info {
+        padding: 80px 10%;
+    }
+
+        .sobre-info h3 {
+            font-size: 42px;
+            margin-bottom: 20px;
+            color: #111;
+        }
+
+        .sobre-info p {
+            font-size: 18px;
+            line-height: 2;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-top: 50px;
+    }
+
+    .card {
+        background: white;
+        border-radius: 22px;
+        padding: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        transition: 0.3s;
+        border: 1px solid #e8e8e8;
+    }
+
+        .card:hover {
+            transform: translateY(-8px);
+        }
+
+        .card h4 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #ff69b4;
+        }
+
+        .card p {
+            color: #444;
+            line-height: 1.8;
+        }
+
+    .contato {
+        background: linear-gradient(135deg, #111, #1b1b1b);
+        color: white;
+        padding: 70px 10%;
+        margin-top: 80px;
+    }
+
+        .contato h3 {
+            font-size: 42px;
+            margin-bottom: 25px;
+        }
+
+    .contato-info {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        font-size: 18px;
+    }
+
+        .contato-info a {
+            color: #ff69b4;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+            .contato-info a:hover {
+                color: white;
+            }
+
+    .quote {
+        margin-top: 50px;
+        padding: 30px;
+        border-left: 4px solid #ff69b4;
+        background: rgba(255,255,255,0.04);
+        border-radius: 14px;
+        font-size: 22px;
+        line-height: 1.8;
+        color: #f1f1f1;
+        font-style: italic;
+    }
+
+    @@media(max-width: 900px) {
+
+        .hero-text h1 {
+            font-size: 42px;
+        }
+
+        .hero-text h2 {
+            font-size: 19px;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 320px;
+        }
+
+        .sobre-info h3,
+        .contato h3 {
+            font-size: 34px;
+        }
+    }
+</style>
+
+<div class="sobre-container">
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Mangá <span>&</span> Lamen</h1>
+                <h2>Seu momento de paz começa com um bom mangá e um universo inteiro para descobrir.</h2>
+                <p>
+                    A Mangá & Lamen nasceu para trazer mangás com preço justo para fãs apaixonados pela cultura japonesa.
+                    Nossa missão é transformar cada leitura em um momento relaxante, divertido e marcante, como aproveitar
+                    um bom lamen enquanto acompanha sua obra favorita.
+                </p>
+            </div>
+            <div class="hero-image">
+                <img src="~/images/Manga&LamenContato.jpg" alt="ContatoIMG" />
+            </div>
+        </div>
+    </section>
+    <section class="sobre-info">
+        <h3>Sobre a Loja</h3>
+        <p>
+            Somos uma loja online especializada exclusivamente em mangás.
+            Trabalhamos para oferecer uma experiência moderna, simples e agradável para leitores que querem encontrar
+            suas obras favoritas sem preços abusivos.
+        </p>
+        <p>
+            Inspirada no conforto de uma boa leitura em um momento tranquilo do dia,
+            a Mangá & Lamen mistura o universo otaku com uma identidade visual moderna,
+            trazendo referências sutis aos animes e à cultura japonesa.
+        </p>
+        <div class="cards">
+            <div class="card">
+                <h4>Mangás</h4>
+                <p>Catálogo focado em diversos gêneros de mangás para todos os tipos de leitores.</p>
+            </div>
+            <div class="card">
+                <h4>Preço Justo</h4>
+                <p>Nossa proposta é tornar a leitura mais acessível sem abrir mão da qualidade.</p>
+            </div>
+            <div class="card">
+                <h4>Universo Otaku</h4>
+                <p>Uma identidade inspirada em animes, Japão e na experiência acolhedora de uma boa leitura.</p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="contato">
+
+        <h3>Contato & Redes</h3>
+        <div class="contato-info">
+            <p><strong>CNPJ:</strong> 66.567.328/0001-00</p>
+            <p><strong>Instagram:</strong><a href="https://www.instagram.com/mangaeramen/"> @@mangaeramen</a></p>
+            <p><strong>WhatsApp:</strong> (11) 91352-1617</p>
+            <p><strong>Shopee:</strong><a href="https://br.shp.ee/sxhzYf7A" target="_blank"> Visitar Loja na Shopee</a></p>
+        </div>
+        <div class="quote">
+            “Nada melhor do que desacelerar o mundo por alguns minutos,
+            abrir um mangá e simplesmente aproveitar a viagem.”
+        </div>
+    </section>
+</div>

@@ -156,12 +156,15 @@
         border-radius: 8px;
         overflow: hidden;
         color: #FFFFFF;
+        max-width: 320px;
+        margin: auto;
     }
 
     .relacionados .card img {
         width: 100%;
         aspect-ratio: 2 / 3;
         object-fit: cover;
+        height: 420px;
     }
 
     .relacionados .card-body {
@@ -257,7 +260,7 @@
                    name="produtoId"
                    value="@Model.Id" />
 
-            <button type="submit"
+            <button type="submit" onclick="comprarAgora(@Model.Id)"
                     class="btn-comprar">
 
                 Comprar agora
@@ -310,43 +313,36 @@
 
         @if (ViewBag.Relacionados != null)
         {
-            @foreach (var item in ViewBag.Relacionados)
-            {
-                <div class="col-md-3 mb-3">
+            <div class="container">
+                <div class="row">
+                    @foreach (var item in ViewBag.Relacionados as List<Produto>)
+                    {
+                        <div class="col-md-3 mb-3">
+                            <a asp-action="Details" asp-route-id="@item.Id" style="text-decoration: none; color: inherit; display: block;">
 
-                    <div class="card">
+                                <div class="card card-flutuante">
+                                    @{
+                                        var imgRel = string.IsNullOrEmpty(item.Imagem) ? "sem-foto.jpg" : item.Imagem;
+                                        var srcRel = imgRel.StartsWith("http") ? imgRel : Url.Content("~/images/" + imgRel);
+                                    }
 
-                        @{
-                            var imgRel =
-                                string.IsNullOrEmpty(item.Imagem)
-                                ? "sem-foto.jpg"
-                                : item.Imagem;
+                                    <img src="@srcRel" alt="@item.Nome" class="card-img-top" />
 
-                            var srcRel =
-                                imgRel.StartsWith("http")
-                                ? imgRel
-                                : Url.Content("~/images/" + imgRel);
-                        }
+                                    <div class="card-body">
+                                        <p class="card-text" style="font-weight: bold; margin-bottom: 5px;">
+                                            @item.Nome
+                                        </p>
+                                        <p class="card-preco" style="color: #28a745; font-weight: bold; margin: 0;">
+                                            R$ @item.Preco.ToString("N2")
+                                        </p>
+                                    </div>
+                                </div>
 
-                        <img src="@srcRel"
-                             alt="@item.Nome" />
-
-                        <div class="card-body">
-
-                            <p class="card-text">
-                                @item.Nome
-                            </p>
-
-                            <p class="card-preco">
-                                R$ @item.Preco.ToString("N2")
-                            </p>
-
+                            </a>
                         </div>
-
-                    </div>
-
+                    }
                 </div>
-            }
+            </div>
         }
 
     </div>
@@ -355,41 +351,67 @@
 
 <script>
 
-async function adicionarCarrinho(produtoId)
-{
-    try
+    async function comprarAgora(produtoId)
     {
-        const response =
-            await fetch('/Carrinho/Adicionar',
-            {
+        try
+        {
+            const response = await fetch('/Carrinho/Adicionar', {
                 method: 'POST',
-
-                headers:
-                {
-                    'Content-Type': 'application/json'
-                },
-
-                body: JSON.stringify(
-                {
-                    produtoId: produtoId
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ produtoId: produtoId })
             });
 
-        if(response.ok)
-        {
-            alert('Produto adicionado ao carrinho!');
+            if(response.ok)
+            {
+                window.location.href = '/carrinho.html';
+            }
+            else
+            {
+                alert('Erro ao iniciar processo de compra do produto.');
+            }
         }
-        else
+        catch(error)
         {
-            alert('Erro ao adicionar produto.');
+            console.error(error);
+            alert('Erro de conexão com o servidor.');
         }
     }
-    catch(error)
-    {
-        console.error(error);
 
-        alert('Erro ao conectar com servidor.');
+    async function adicionarCarrinho(produtoId)
+    {
+        try
+        {
+            const response =
+                await fetch('/Carrinho/Adicionar',
+                {
+                    method: 'POST',
+
+                    headers:
+                    {
+                        'Content-Type': 'application/json'
+                    },
+
+                    body: JSON.stringify(
+                    {
+                        produtoId: produtoId
+                    })
+                });
+
+            if(response.ok)
+            {
+                alert('Produto adicionado ao carrinho!');
+            }
+            else
+            {
+                alert('Erro ao adicionar produto.');
+            }
+        }
+        catch(error)
+        {
+            console.error(error);
+
+            alert('Erro ao conectar com servidor.');
+        }
     }
-}
 
 </script>

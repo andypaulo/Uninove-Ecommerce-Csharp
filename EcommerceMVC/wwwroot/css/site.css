@@ -29,3 +29,41 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.card-flutuante {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: flutuarLeve 4s ease-in-out infinite;
+}
+
+.col-md-3:nth-child(2) .card-flutuante {
+    animation-delay: 0.5s;
+}
+
+.col-md-3:nth-child(3) .card-flutuante {
+    animation-delay: 1s;
+}
+
+.col-md-3:nth-child(4) .card-flutuante {
+    animation-delay: 1.5s;
+}
+
+.card-flutuante:hover {
+    transform: translateY(-5px) scale(1.02) !important;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    animation-play-state: paused; 
+    cursor: pointer;
+}
+
+@keyframes flutuarLeve {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-4px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
